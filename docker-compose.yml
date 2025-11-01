@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: eco_trash_impal_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eco_trash_impal_db
+      POSTGRES_USER: eco_trash_impal_user
+      POSTGRES_PASSWORD: eco_trash_impal_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
