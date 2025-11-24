@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequestMapping("/")
 public class HomeController {
-  @GetMapping
-  public String welcome(Model model) {
-    String message = "Welcome to EcoTrash Application!";
-    model.addAttribute("message", message);
-    return "index";
-  }
+    @GetMapping
+    public String welcome(Model model) {
+        String message = "Welcome to EcoTrash Application!";
+        model.addAttribute("message", message);
+        return "general/index";
+    }
 }

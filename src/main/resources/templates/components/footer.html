@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+    <!-- Footer -->
+    <footer th:fragment="footer" class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <!-- Brand Section -->
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="logo-icon-footer me-2">🍃</span>
+                        <h5 class="mb-0">ECOTrash</h5>
+                    </div>
+                    <p class="text-muted">Lingkungan bersih karena kita berani</p>
+                </div>
+
+                <!-- Location Section -->
+                <div class="col-md-4 mb-3">
+                    <h6 class="text-uppercase mb-3">Lokasi</h6>
+                    <p class="text-muted small">
+                        Jl. Telekomunikasi No.1, Sukapura,<br>
+                        Kec. Dayeuhkolot, Kabupaten<br>
+                        Bandung, Jawa Barat 40257
+                    </p>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="col-md-4 mb-3">
+                    <h6 class="text-uppercase mb-3">Kontak</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none small">Menu 1</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none small">Menu 2</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none small">Menu 3</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary">
+
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted small mb-0">
+                        &copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> ECOTrash. All rights
+                        reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Footer Styles -->
+    <style th:fragment="footer-styles">
+        .logo-icon-footer {
+            width: 35px;
+            height: 35px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        footer a:hover {
+            color: #27ae60 !important;
+        }
+    </style>
+
+    <!-- Bootstrap JS -->
+    <script th:fragment="scripts" th:src="@{/webjars/bootstrap/5.3.5/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>
