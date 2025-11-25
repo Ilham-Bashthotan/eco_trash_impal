@@ -70,4 +70,14 @@ public class AuthService {
         user.setPassword(hashPassword(user.getPassword()));
         return userRepository.save(user);
     }
+
+    /**
+     * Find user by ID
+     * 
+     * @param userId User ID
+     * @return User object
+     */
+    public Optional<User> findById(Integer userId) {
+        return userRepository.findById(userId);
+    }
 }
