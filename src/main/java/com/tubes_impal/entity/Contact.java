@@ -28,10 +28,16 @@ public class Contact {
     @Column(columnDefinition = "TEXT")
     private String address;
     
+    @Column(name = "latitude")
+    private Double latitude;
+    
+    @Column(name = "longitude")
+    private Double longitude;
+    
     public Contact() {
     }
     
-    public Contact(Integer id, User user, String firstName, String lastName, String phoneNumber, String email, String address) {
+    public Contact(Integer id, User user, String firstName, String lastName, String phoneNumber, String email, String address, Double latitude, Double longitude) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;
@@ -39,6 +45,8 @@ public class Contact {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
     
     public Integer getId() {
@@ -95,5 +103,21 @@ public class Contact {
     
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public Double getLatitude() {
+        return latitude;
+    }
+    
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+    
+    public Double getLongitude() {
+        return longitude;
+    }
+    
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

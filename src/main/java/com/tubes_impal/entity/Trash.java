@@ -14,6 +14,12 @@ public class Trash {
     @Column(columnDefinition = "TEXT")
     private String address;
     
+    @Column(name = "latitude")
+    private Double latitude;
+    
+    @Column(name = "longitude")
+    private Double longitude;
+    
     @Column(name = "photo_proof")
     private String photoProof;
     
@@ -26,9 +32,11 @@ public class Trash {
     public Trash() {
     }
     
-    public Trash(Integer id, String address, String photoProof, Double trashWeight, List<TrashOrder> trashOrders) {
+    public Trash(Integer id, String address, Double latitude, Double longitude, String photoProof, Double trashWeight, List<TrashOrder> trashOrders) {
         this.id = id;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.photoProof = photoProof;
         this.trashWeight = trashWeight;
         this.trashOrders = trashOrders;
@@ -48,6 +56,22 @@ public class Trash {
     
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public Double getLatitude() {
+        return latitude;
+    }
+    
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+    
+    public Double getLongitude() {
+        return longitude;
+    }
+    
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
     
     public String getPhotoProof() {
