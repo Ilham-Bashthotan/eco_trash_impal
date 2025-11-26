@@ -1,6 +1,7 @@
 package com.tubes_impal.controller;
 
 import com.tubes_impal.entity.User;
+import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.services.AdminService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,13 +23,16 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * Check admin authentication
      */
     private boolean isAdminAuthenticated(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
         String role = (String) session.getAttribute("role");
-        return user != null && "ADMIN".equals(role);
+        return userId != null && "ADMIN".equals(role);
     }
 
     /**
@@ -39,10 +44,14 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
 
         // Add user info to model
-        model.addAttribute("user", user);
         model.addAttribute("username", user.getUsername());
         model.addAttribute("name", user.getName());
 
@@ -73,7 +82,12 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
 
         // Add user info to model
         model.addAttribute("username", user.getUsername());
@@ -103,7 +117,7 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", "Gagal hire kurir. Kurir tidak ditemukan atau sudah aktif.");
         }
 
-        return "redirect:/admin/courier";
+        return "redirect:/admin/courier-management";
     }
 
     /**
@@ -123,7 +137,7 @@ public class AdminController {
                     "Gagal fire kurir. Kurir tidak ditemukan atau sudah tidak aktif.");
         }
 
-        return "redirect:/admin/courier";
+        return "redirect:/admin/courier-management";
     }
 
     /**
@@ -135,7 +149,12 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
 
         // Add user info to model
         model.addAttribute("username", user.getUsername());
@@ -160,7 +179,12 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
 
         // Add user info to model
         model.addAttribute("username", user.getUsername());
@@ -186,7 +210,13 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
+
         model.addAttribute("username", user.getUsername());
         model.addAttribute("name", user.getName());
 
@@ -232,7 +262,13 @@ public class AdminController {
             return "redirect:/auth/admin/login";
         }
 
-        User user = (User) session.getAttribute("user");
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return "redirect:/auth/admin/login";
+        }
+        User user = userOpt.get();
+
         model.addAttribute("username", user.getUsername());
         model.addAttribute("name", user.getName());
 

@@ -22,7 +22,7 @@ public class AuthController {
     @GetMapping("/admin/login")
     public String showAdminLoginPage(HttpSession session, Model model) {
         // Jika sudah login, redirect ke dashboard
-        if (session.getAttribute("user") != null) {
+        if (session.getAttribute("userId") != null) {
             return "redirect:/admin/dashboard";
         }
         return "auth/admin-login";
@@ -59,8 +59,7 @@ public class AuthController {
             return "redirect:/auth/admin/login";
         }
 
-        // Simpan user di session
-        session.setAttribute("user", user);
+        // Simpan data user di session (tidak perlu object User utuh)
         session.setAttribute("userId", user.getId());
         session.setAttribute("username", user.getUsername());
         session.setAttribute("role", user.getRole().toString());
@@ -88,4 +87,5 @@ public class AuthController {
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/admin/login";
     }
+    
 }

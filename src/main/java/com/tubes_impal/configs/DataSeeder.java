@@ -5,16 +5,17 @@ import com.tubes_impal.entity.User;
 import com.tubes_impal.entity.UserRole;
 import com.tubes_impal.repos.AdminRepository;
 import com.tubes_impal.repos.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Base64;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class DataSeeder {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository,
@@ -26,8 +27,8 @@ public class DataSeeder {
                 User superAdminUser = new User();
                 superAdminUser.setName("Super Admin");
                 superAdminUser.setUsername("superadmin");
-                // Hash password menggunakan SHA-256
-                superAdminUser.setPassword(hashPassword("admin123"));
+                // Hash password menggunakan BCrypt
+                superAdminUser.setPassword(passwordEncoder.encode("admin123"));
                 superAdminUser.setRole(UserRole.ADMIN);
 
                 // Save user terlebih dahulu
@@ -49,19 +50,5 @@ public class DataSeeder {
                 System.out.println("✓ Super Admin sudah ada di database");
             }
         };
-    }
-
-    /**
-     * Hash password menggunakan SHA-256
-     * Untuk production, gunakan BCrypt dengan Spring Security
-     */
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (Exception e) {
-            throw new RuntimeException("Error hashing password", e);
-        }
     }
 }

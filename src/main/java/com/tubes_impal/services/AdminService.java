@@ -11,13 +11,11 @@ import com.tubes_impal.repos.SellerRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
 import com.tubes_impal.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +38,9 @@ public class AdminService {
 
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Get dashboard statistics
@@ -248,11 +249,8 @@ public class AdminService {
             user.setName(phoneNumber); // Store phone number in name field temporarily
             user.setRole(UserRole.ADMIN);
 
-            // Hash password using SHA-256
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            String hashedPassword = Base64.getEncoder().encodeToString(hash);
-            user.setPassword(hashedPassword);
+            // Hash password using BCrypt
+            user.setPassword(passwordEncoder.encode(password));
 
             // Save user
             User savedUser = userRepository.save(user);
@@ -296,11 +294,8 @@ public class AdminService {
             user.setName(username); // Set name same as username
             user.setRole(UserRole.COURIER);
 
-            // Hash password using SHA-256
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            String hashedPassword = Base64.getEncoder().encodeToString(hash);
-            user.setPassword(hashedPassword);
+            // Hash password using BCrypt
+            user.setPassword(passwordEncoder.encode(password));
 
             // Save user
             User savedUser = userRepository.save(user);

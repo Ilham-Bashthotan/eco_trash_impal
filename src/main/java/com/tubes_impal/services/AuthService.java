@@ -3,16 +3,13 @@ package com.tubes_impal.services;
 import com.tubes_impal.entity.User;
 import com.tubes_impal.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.Optional;
 
 /**
- * Example Authentication Service
- * Menunjukkan cara verify password yang di-hash oleh seeder
+ * Authentication Service with BCrypt password hashing
  */
 @Service
 public class AuthService {
@@ -20,8 +17,13 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * Verify login credentials
+     * Note: Spring Security akan handle authentication secara otomatis,
+     * method ini hanya untuk backward compatibility atau manual login
      * 
      * @param username Username
      * @param password Plain text password
@@ -35,10 +37,9 @@ public class AuthService {
         }
 
         User user = userOpt.get();
-        String hashedPassword = hashPassword(password);
 
-        // Verify password
-        if (user.getPassword().equals(hashedPassword)) {
+        // Verify password menggunakan BCrypt
+        if (passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
 
@@ -46,17 +47,10 @@ public class AuthService {
     }
 
     /**
-     * Hash password menggunakan SHA-256
-     * Method ini HARUS sama dengan yang digunakan di DataSeeder
+     * Hash password menggunakan BCrypt
      */
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (Exception e) {
-            throw new RuntimeException("Error hashing password", e);
-        }
+    public String hashPassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     /**
