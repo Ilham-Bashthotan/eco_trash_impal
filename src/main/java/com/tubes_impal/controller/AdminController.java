@@ -177,4 +177,98 @@ public class AdminController {
         return "admin/courier-statistics";
     }
 
+    /**
+     * Admin Registration Page
+     */
+    @GetMapping("/admin-registration")
+    public String adminRegistration(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("name", user.getName());
+
+        return "admin/admin-registration";
+    }
+
+    /**
+     * Register New Admin
+     */
+    @PostMapping("/register-admin")
+    public String registerAdmin(
+            HttpSession session,
+            @org.springframework.web.bind.annotation.RequestParam String username,
+            @org.springframework.web.bind.annotation.RequestParam String email,
+            @org.springframework.web.bind.annotation.RequestParam String password,
+            @org.springframework.web.bind.annotation.RequestParam String phoneNumber,
+            RedirectAttributes redirectAttributes) {
+
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        try {
+            boolean success = adminService.registerAdmin(username, email, password, phoneNumber);
+            if (success) {
+                redirectAttributes.addFlashAttribute("success", "Admin berhasil didaftarkan!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Username atau email sudah digunakan.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal mendaftarkan admin: " + e.getMessage());
+        }
+
+        return "redirect:/admin/admin-registration";
+    }
+
+    /**
+     * Courier Registration Page
+     */
+    @GetMapping("/courier-registration")
+    public String courierRegistration(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("name", user.getName());
+
+        return "admin/courier-registration";
+    }
+
+    /**
+     * Register New Courier
+     */
+    @PostMapping("/register-courier")
+    public String registerCourier(
+            HttpSession session,
+            @org.springframework.web.bind.annotation.RequestParam String username,
+            @org.springframework.web.bind.annotation.RequestParam String email,
+            @org.springframework.web.bind.annotation.RequestParam String password,
+            @org.springframework.web.bind.annotation.RequestParam String phoneNumber,
+            @org.springframework.web.bind.annotation.RequestParam String nik,
+            @org.springframework.web.bind.annotation.RequestParam String driverLicense,
+            RedirectAttributes redirectAttributes) {
+
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        try {
+            boolean success = adminService.registerCourier(username, email, password, phoneNumber, nik, driverLicense);
+            if (success) {
+                redirectAttributes.addFlashAttribute("success", "Kurir berhasil didaftarkan!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Username sudah digunakan.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal mendaftarkan kurir: " + e.getMessage());
+        }
+
+        return "redirect:/admin/courier-registration";
+    }
+
 }

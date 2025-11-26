@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrasi Admin - Eco Trash</title>
+    <title>Registrasi Kurir - Eco Trash</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -24,8 +24,8 @@
     <div class="container">
         <!-- Header -->
         <div class="dashboard-header">
-            <h1>Registrasi Admin</h1>
-            <p>Tambah Admin Baru</p>
+            <h1>Registrasi Kurir</h1>
+            <p>Tambah Kurir Baru</p>
         </div>
 
         <!-- Alert Messages -->
@@ -43,7 +43,7 @@
         <!-- Registration Form Card -->
         <div class="card" style="max-width: 600px; margin: 0 auto; border-radius: 8px;">
             <div class="card-body" style="padding: 40px;">
-                <form method="post" th:action="@{/admin/register-admin}" id="registrationForm">
+                <form method="post" th:action="@{/admin/register-courier}" id="registrationForm">
                     <!-- Username -->
                     <div class="mb-3">
                         <label for="username" class="form-label" style="font-weight: 500; color: #333;">Username</label>
@@ -90,12 +90,29 @@
                     </div>
 
                     <!-- Nomor Telepon -->
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <label for="phoneNumber" class="form-label" style="font-weight: 500; color: #333;">Nomor
                             Telepon</label>
                         <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
                             placeholder="08xxxxxxxxxx" required pattern="[0-9]{10,13}">
                         <div class="invalid-feedback">Nomor telepon harus 10-13 digit angka</div>
+                    </div>
+
+                    <!-- Nomor NIK -->
+                    <div class="mb-3">
+                        <label for="nik" class="form-label" style="font-weight: 500; color: #333;">Nomor NIK</label>
+                        <input type="text" class="form-control" id="nik" name="nik" placeholder="16 digit NIK" required
+                            pattern="[0-9]{16}" maxlength="16">
+                        <div class="invalid-feedback">NIK harus 16 digit angka</div>
+                    </div>
+
+                    <!-- Surat Izin Mengemudi -->
+                    <div class="mb-4">
+                        <label for="driverLicense" class="form-label" style="font-weight: 500; color: #333;">Surat Izin
+                            Mengemudi (SIM)</label>
+                        <input type="text" class="form-control" id="driverLicense" name="driverLicense"
+                            placeholder="Nomor SIM" required>
+                        <div class="invalid-feedback">Nomor SIM harus diisi</div>
                     </div>
 
                     <!-- Buttons -->
@@ -166,7 +183,7 @@
             }
         });
 
-        console.log('Admin registration page loaded');
+        console.log('Courier registration page loaded');
     </script>
 </body>
 

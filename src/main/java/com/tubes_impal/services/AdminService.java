@@ -1,15 +1,23 @@
 package com.tubes_impal.services;
 
+import com.tubes_impal.entity.Admin;
 import com.tubes_impal.entity.Courier;
 import com.tubes_impal.entity.StatusCourier;
+import com.tubes_impal.entity.User;
+import com.tubes_impal.entity.UserRole;
+import com.tubes_impal.repos.AdminRepository;
 import com.tubes_impal.repos.CourierRepository;
 import com.tubes_impal.repos.SellerRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
+import com.tubes_impal.repos.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +34,12 @@ public class AdminService {
 
     @Autowired
     private TrashOrderRepository trashOrderRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     /**
      * Get dashboard statistics
@@ -210,5 +224,101 @@ public class AdminService {
         stats.put("totalLate", totalLate);
 
         return stats;
+    }
+
+    /**
+     * Register new admin
+     * 
+     * @param username    Admin username
+     * @param email       Admin email (will be stored in username field)
+     * @param password    Admin password
+     * @param phoneNumber Admin phone number (stored as name)
+     * @return true if successful, false otherwise
+     */
+    public boolean registerAdmin(String username, String email, String password, String phoneNumber) {
+        try {
+            // Check if username already exists
+            if (userRepository.findByUsername(username).isPresent()) {
+                return false;
+            }
+
+            // Create new User
+            User user = new User();
+            user.setUsername(username);
+            user.setName(phoneNumber); // Store phone number in name field temporarily
+            user.setRole(UserRole.ADMIN);
+
+            // Hash password using SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            String hashedPassword = Base64.getEncoder().encodeToString(hash);
+            user.setPassword(hashedPassword);
+
+            // Save user
+            User savedUser = userRepository.save(user);
+
+            // Create new Admin entity
+            Admin admin = new Admin();
+            admin.setUser(savedUser);
+
+            // Save admin
+            adminRepository.save(admin);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Register new courier
+     * 
+     * @param username      Courier username
+     * @param email         Courier email
+     * @param password      Courier password
+     * @param phoneNumber   Courier phone number
+     * @param nik           Courier NIK (16 digits)
+     * @param driverLicense Courier driver license number
+     * @return true if successful, false otherwise
+     */
+    public boolean registerCourier(String username, String email, String password, String phoneNumber, String nik,
+            String driverLicense) {
+        try {
+            // Check if username already exists
+            if (userRepository.findByUsername(username).isPresent()) {
+                return false;
+            }
+
+            // Create new User
+            User user = new User();
+            user.setUsername(username);
+            user.setName(username); // Set name same as username
+            user.setRole(UserRole.COURIER);
+
+            // Hash password using SHA-256
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            String hashedPassword = Base64.getEncoder().encodeToString(hash);
+            user.setPassword(hashedPassword);
+
+            // Save user
+            User savedUser = userRepository.save(user);
+
+            // Create new Courier entity with OFFLINE status (not yet hired)
+            Courier courier = new Courier();
+            courier.setUser(savedUser);
+            courier.setStatus(StatusCourier.OFFLINE);
+            // Note: NIK, phone number, and driver license are stored temporarily
+            // You may need to add these fields to Courier entity or create a separate table
+
+            // Save courier
+            courierRepository.save(courier);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
