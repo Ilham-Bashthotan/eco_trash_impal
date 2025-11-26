@@ -4,151 +4,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Eco Trash</title>
+    <title>Dashboard Admin - Eco Trash</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
         }
 
         .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .navbar-brand {
-            font-weight: 700;
-            color: white !important;
+            font-weight: bold;
+            color: #2c3e50 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: #555;
+            margin: 0 10px;
+        }
+
+        .nav-link:hover {
+            color: #27ae60;
+        }
+
+        .btn-sign-in {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-sign-in:hover {
+            background-color: #229954;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
         }
 
         .dashboard-header {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
             margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header p {
+            color: #6c757d;
+            font-size: 0.95rem;
         }
 
         .stats-card {
             background: white;
-            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            margin-bottom: 20px;
+            transition: box-shadow 0.2s;
         }
 
         .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .stats-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .stats-title {
+        .stats-card-title {
+            font-size: 0.95rem;
             color: #6c757d;
-            font-size: 0.9rem;
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
-        .stats-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #333;
+        .stats-card-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
         }
 
-        .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .btn-refresh {
+            background-color: #d4af37;
             color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 5px;
             font-weight: 500;
+            margin-top: 20px;
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .btn-refresh:hover {
+            background-color: #c9a02c;
             color: white;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">🌿 Eco Trash Admin</a>
-            <div class="ms-auto">
-                <span class="navbar-text text-white me-3">
-                    <span th:text="${name != null ? name : username}">Admin</span>
-                </span>
-                <form method="post" th:action="@{/auth/admin/logout}" style="display: inline;">
-                    <button type="submit" class="btn btn-logout btn-sm">Logout</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <!-- Include Navbar -->
+    <div th:replace="~{components/admin-header :: navbar}"></div>
 
     <!-- Main Content -->
-    <div class="container mt-4">
+    <div class="container">
         <!-- Header -->
         <div class="dashboard-header">
-            <h1 class="mb-2">Dashboard Admin</h1>
-            <p class="text-muted mb-0">Selamat datang di panel admin Eco Trash</p>
+            <h1>Dashboard Admin</h1>
+            <p>Selamat Datang, <span th:text="${name != null ? name : username}">Admin</span></p>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <div class="stats-icon">👥</div>
-                    <div class="stats-title">Total Users</div>
-                    <div class="stats-value" id="totalUsers">-</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <div class="stats-icon">🛒</div>
-                    <div class="stats-title">Total Sellers</div>
-                    <div class="stats-value" id="totalSellers">-</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <div class="stats-icon">🚚</div>
-                    <div class="stats-title">Total Couriers</div>
-                    <div class="stats-value" id="totalCouriers">-</div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="stats-card text-center">
-                    <div class="stats-icon">📦</div>
-                    <div class="stats-title">Total Orders</div>
-                    <div class="stats-value" id="totalOrders">-</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Content -->
-        <div class="row mt-4">
-            <div class="col-12">
+        <!-- Stats Cards Row 1 -->
+        <div class="row g-3">
+            <div class="col-md-4">
                 <div class="stats-card">
-                    <h4 class="mb-3">Quick Actions</h4>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-primary">Manage Users</button>
-                        <button class="btn btn-success">Manage Sellers</button>
-                        <button class="btn btn-info">Manage Couriers</button>
-                        <button class="btn btn-warning">View Orders</button>
-                    </div>
+                    <div class="stats-card-title">Total Seller</div>
+                    <div class="stats-card-value" th:text="${totalSellers}">0</div>
                 </div>
             </div>
+
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Total Courier</div>
+                    <div class="stats-card-value" th:text="${totalCouriers}">0</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Total Order hari ini</div>
+                    <div class="stats-card-value" th:text="${totalOrdersToday}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards Row 2 -->
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Total berat Trash hari ini</div>
+                    <div class="stats-card-value" th:text="${totalTrashWeight}">0 kg</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refresh Button -->
+        <div class="text-center">
+            <a href="/admin/dashboard" class="btn btn-refresh">Refresh Data</a>
         </div>
     </div>
 
@@ -157,18 +182,8 @@
 
     <!-- Custom JavaScript -->
     <script>
-        // Load dashboard data on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadDashboardData();
-        });
-
-        function loadDashboardData() {
-            // Placeholder - implement actual API calls
-            document.getElementById('totalUsers').textContent = '0';
-            document.getElementById('totalSellers').textContent = '0';
-            document.getElementById('totalCouriers').textContent = '0';
-            document.getElementById('totalOrders').textContent = '0';
-        }
+        // Dashboard loaded with server-side data
+        console.log('Dashboard loaded successfully');
     </script>
 </body>
 

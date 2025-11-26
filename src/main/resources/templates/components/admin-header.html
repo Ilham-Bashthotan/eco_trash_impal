@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="header">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle : 'ECOTrash'}">ECOTrash</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: #555;
+            margin: 0 10px;
+        }
+
+        .nav-link:hover {
+            color: #27ae60;
+        }
+
+        .btn-sign-in {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-sign-in:hover {
+            background-color: #229954;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <div class="navbar-brand" href="/admin/dashboard">
+                <span class="logo-icon">🍃</span>
+                ECOTrash Admin
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/courier">Manajemen Kurir</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Statistik
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/statistik/sampah">Statistik Sampah</a></li>
+                            <li><a class="dropdown-item" href="/admin/statistik/kurir">Statistik Kurir</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Registrasi
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin/registrasi/admin">Registrasi Admin</a></li>
+                            <li><a class="dropdown-item" href="/admin/registrasi/courier">Registrasi Courier</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-3" th:text="${username}">Admin</span>
+                    <form method="post" th:action="@{/auth/admin/logout}" style="margin: 0;">
+                        <button type="submit" class="btn btn-sign-in">Keluar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+</body>
+
+</html>
