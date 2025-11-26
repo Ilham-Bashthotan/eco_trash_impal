@@ -117,4 +117,30 @@ public class AdminController {
 
         return "redirect:/admin/courier";
     }
+
+    /**
+     * Trash Statistics Page
+     */
+    @GetMapping("/trash-statistics")
+    public String trashStatistics(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        User user = (User) session.getAttribute("user");
+
+        // Add user info to model
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("name", user.getName());
+
+        // Get trash statistics
+        Map<String, Object> stats = adminService.getTrashStatistics();
+        model.addAttribute("trashOrders", stats.get("trashOrders"));
+        model.addAttribute("totalOrders", stats.get("totalOrders"));
+        model.addAttribute("totalWeight", stats.get("totalWeight"));
+        model.addAttribute("averageWeight", stats.get("averageWeight"));
+
+        return "admin/trash-statistics";
+    }
+
 }

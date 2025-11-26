@@ -119,4 +119,36 @@ public class AdminService {
         }
         return false;
     }
+
+    /**
+     * Get trash statistics for today
+     * 
+     * @return Map containing trash statistics
+     */
+    public Map<String, Object> getTrashStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+
+        // Get today's date range
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
+
+        // Get all trash orders for today
+        var ordersToday = trashOrderRepository.findByTimeBetween(startOfDay, endOfDay);
+        stats.put("trashOrders", ordersToday);
+
+        // Total orders today
+        stats.put("totalOrders", ordersToday.size());
+
+        // Total weight today
+        double totalWeight = ordersToday.stream()
+                .mapToDouble(order -> order.getTrash() != null ? order.getTrash().getTrashWeight() : 0.0)
+                .sum();
+        stats.put("totalWeight", String.format("%.2f kg", totalWeight));
+
+        // Average weight per order
+        double averageWeight = ordersToday.isEmpty() ? 0.0 : totalWeight / ordersToday.size();
+        stats.put("averageWeight", String.format("%.2f kg", averageWeight));
+
+        return stats;
+    }
 }

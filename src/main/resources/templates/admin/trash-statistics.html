@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik Sampah - Eco Trash</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c3e50 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: #555;
+            margin: 0 10px;
+        }
+
+        .nav-link:hover {
+            color: #27ae60;
+        }
+
+        .btn-sign-in {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-sign-in:hover {
+            background-color: #229954;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
+        .dashboard-header {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .stats-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.2s;
+        }
+
+        .stats-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card-title {
+            font-size: 0.95rem;
+            color: #6c757d;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .stats-card-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .btn-refresh {
+            background-color: #d4af37;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 5px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .btn-refresh:hover {
+            background-color: #c9a02c;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Include Navbar -->
+    <div th:replace="~{components/admin-header :: navbar}"></div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>Statistik Sampah</h1>
+            <p>Data Trash Order Hari Ini</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Total Order Hari Ini</div>
+                    <div class="stats-card-value" th:text="${totalOrders}">0</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Total Berat Sampah</div>
+                    <div class="stats-card-value" th:text="${totalWeight}">0.00 kg</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-card-title">Rata-rata Berat per Order</div>
+                    <div class="stats-card-value" th:text="${averageWeight}">0.00 kg</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trash Orders Table -->
+        <h4 class="mb-3" style="color: #2c3e50; font-weight: 600;">Detail Trash Order Hari Ini</h4>
+        <div class="card mb-4" style="border-radius: 8px; overflow: hidden;">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">ID Trash Order</th>
+                            <th style="width: 40%;">Waktu</th>
+                            <th style="width: 35%; text-align: right;">Berat Sampah (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${trashOrders}">
+                            <td th:text="${order.id}" style="font-weight: 500;">#001</td>
+                            <td th:text="${#temporals.format(order.time, 'dd MMM yyyy HH:mm:ss')}"
+                                style="color: #6c757d;">26 Nov 2025 10:30:00</td>
+                            <td th:text="${order.trash != null ? order.trash.trashWeight : '0.00'}"
+                                style="text-align: right; font-weight: 600; color: #27ae60;">5.50</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(trashOrders)}">
+                            <td colspan="3" class="text-center text-muted" style="padding: 30px;">Tidak ada data trash
+                                order hari ini
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Dashboard loaded with server-side data
+        console.log('Dashboard loaded successfully');
+    </script>
+</body>
+
+</html>
