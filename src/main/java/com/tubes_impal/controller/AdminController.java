@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -54,6 +56,14 @@ public class AdminController {
         model.addAttribute("totalTrashWeight", stats.get("totalTrashWeight"));
 
         return "admin/dashboard";
+    }
+
+    /**
+     * Redirect /admin to /admin/dashboard
+     */
+    @GetMapping("/")
+    public String adminRootRedirect() {
+        return "redirect:/admin/dashboard";
     }
 
     /**
@@ -141,6 +151,32 @@ public class AdminController {
         model.addAttribute("averageWeight", stats.get("averageWeight"));
 
         return "admin/trash-statistics";
+    }
+
+    /**
+     * Courier Statistics Page
+     */
+    @GetMapping("/courier-statistics")
+    public String courierStatistics(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+
+        User user = (User) session.getAttribute("user");
+
+        // Add user info to model
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("name", user.getName());
+
+        // Get courier statistics
+        Map<String, Object> stats = adminService.getCourierStatistics();
+        model.addAttribute("courierStats", stats.get("courierStats"));
+        model.addAttribute("totalActiveCouriers", stats.get("totalActiveCouriers"));
+        model.addAttribute("totalDeliveries", stats.get("totalDeliveries"));
+        model.addAttribute("totalOnTime", stats.get("totalOnTime"));
+        model.addAttribute("totalLate", stats.get("totalLate"));
+
+        return "admin/courier-statistics";
     }
 
 }

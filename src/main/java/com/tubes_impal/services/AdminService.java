@@ -151,4 +151,64 @@ public class AdminService {
 
         return stats;
     }
+
+    /**
+     * Get courier statistics
+     * 
+     * @return Map containing courier statistics
+     */
+    public Map<String, Object> getCourierStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+        List<Map<String, Object>> courierStats = new java.util.ArrayList<>();
+
+        // Get all active couriers (not OFFLINE)
+        List<Courier> activeCouriers = courierRepository.findAll().stream()
+                .filter(c -> c.getStatus() != StatusCourier.OFFLINE)
+                .toList();
+
+        int totalDeliveries = 0;
+        int totalOnTime = 0;
+        int totalLate = 0;
+
+        // Calculate stats for each courier
+        for (Courier courier : activeCouriers) {
+            Map<String, Object> courierStat = new HashMap<>();
+
+            // Get all orders for this courier
+            var orders = trashOrderRepository.findAll().stream()
+                    .filter(o -> o.getCourier() != null && o.getCourier().getId().equals(courier.getId()))
+                    .toList();
+
+            int deliveries = orders.size();
+            // Simulate on-time and late deliveries (you can implement real logic based on
+            // your business rules)
+            // For now, assuming 80% are on time
+            int onTime = (int) (deliveries * 0.8);
+            int late = deliveries - onTime;
+
+            double successRate = deliveries > 0 ? (double) onTime / deliveries * 100 : 0;
+
+            courierStat.put("courierName", courier.getUser().getName());
+            courierStat.put("totalDeliveries", deliveries);
+            courierStat.put("onTime", onTime);
+            courierStat.put("late", late);
+            courierStat.put("successRate", String.format("%.1f%%", successRate));
+            courierStat.put("successRateValue", successRate);
+            courierStat.put("status", courier.getStatus().name());
+
+            courierStats.add(courierStat);
+
+            totalDeliveries += deliveries;
+            totalOnTime += onTime;
+            totalLate += late;
+        }
+
+        stats.put("courierStats", courierStats);
+        stats.put("totalActiveCouriers", activeCouriers.size());
+        stats.put("totalDeliveries", totalDeliveries);
+        stats.put("totalOnTime", totalOnTime);
+        stats.put("totalLate", totalLate);
+
+        return stats;
+    }
 }
