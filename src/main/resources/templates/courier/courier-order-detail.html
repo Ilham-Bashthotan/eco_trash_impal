@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>Detail Pesanan - Courier</title>
+  <link href="/css/admin-style.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <div th:replace="~{components/courier-header :: navbar}"></div>
+
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>Detail Pesanan</h1>
+      <p>ID: <strong th:text="${order.orderId}">ORD-1001</strong></p>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row mb-2">
+          <div class="col-md-6"><strong>Pelanggan</strong><div th:text="${order.sellerName}">Alice</div></div>
+          <div class="col-md-6"><strong>Alamat</strong><div th:text="${order.address}">...</div></div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-md-4"><strong>Berat (kg)</strong><div th:text="${order.weight}">1.5</div></div>
+          <div class="col-md-4"><strong>Status</strong><div th:text="${order.status}">PENDING</div></div>
+          <div class="col-md-4"><strong>Waktu</strong><div th:text="${order.createdAt}">2025-12-06</div></div>
+        </div>
+
+        <div class="mt-3">
+          <button th:if="${order.status == 'PENDING'}" class="btn btn-success" th:attr="data-id=${order.id}" onclick="processPickup(this)">Ambil Pesanan</button>
+          <button th:if="${order.status == 'PICKED_UP'}" class="btn btn-warning" th:attr="data-id=${order.id}" onclick="markDelivered(this)">Tandai Delivered</button>
+          <button th:if="${order.status == 'DELIVERED'}" class="btn btn-primary" th:attr="data-id=${order.id}" onclick="completeOrder(this)">Selesaikan</button>
+          <a class="btn btn-outline-secondary" th:href="@{/courier/orders}">Kembali</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/courier.js"></script>
+</body>
+</html>
+
