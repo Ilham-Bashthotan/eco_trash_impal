@@ -66,12 +66,33 @@ public class AuthService {
     }
 
     /**
-     * Find user by ID
-     * 
-     * @param userId User ID
-     * @return User object
+     * @param userId 
+     * @return
      */
     public Optional<User> findById(Integer userId) {
         return userRepository.findById(userId);
+    }
+
+    /**
+     * @param username 
+     * @param email 
+     * @param password 
+     * @return 
+     * @throws Exception 
+     */
+    public User registerSeller(String username, String email, String password) throws Exception {
+
+        Optional<User> existingUserByUsername = userRepository.findByUsername(username);
+        if (existingUserByUsername.isPresent()) {
+            throw new Exception("Username sudah terdaftar");
+        }
+
+        User newSeller = new User();
+        newSeller.setUsername(username);
+        newSeller.setEmail(email);
+        newSeller.setPassword(password);
+        newSeller.setRole(com.tubes_impal.entity.UserRole.SELLER);
+
+        return register(newSeller);
     }
 }
