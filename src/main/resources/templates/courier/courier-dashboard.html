@@ -46,7 +46,6 @@
               <th>Order ID</th>
               <th>Pelanggan</th>
               <th>Status</th>
-              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -64,19 +63,7 @@
                 </span>
               </td>
               <td>
-                <a th:href="@{/courier/orders/{id}(id=${o.id})}" class="btn btn-sm btn-outline-primary">Detail</a>
 
-                <!-- Tombol contextual -->
-                <button th:if="${o.status == 'PENDING'}"
-                        class="btn btn-sm btn-success ms-1"
-                        th:attr="data-id=${o.id}"
-                        onclick="processPickup(this)">Ambil</button>
-
-                <button th:if="${o.status == 'PICKED_UP'}"
-                        class="btn btn-sm btn-warning ms-1"
-                        th:attr="data-id=${o.id}"
-                        onclick="markDelivered(this)">Tandai Delivered</button>
-              </td>
             </tr>
 
             <tr th:if="${#lists.isEmpty(activeOrders)}">

@@ -21,9 +21,14 @@ public class CourierController {
         order1.put("sellerName", "Alice Shop");
         order1.put("status", "PENDING");
         order1.put("weight", "2.5");
-        order1.put("address", "Jl. Merdeka No. 123, Jakarta");
-        order1.put("createdAt", "2025-12-06 09:15");
+        order1.put("address", "Jl. Merdeka 12, Bandung");
+        order1.put("createdAt", "2025-11-24 09:45");
         order1.put("description", "Sampah plastik dan kertas");
+        order1.put("latitude", -6.9271);
+        order1.put("longitude", 107.6411);
+        order1.put("photoProof", null);
+        order1.put("reason", null);
+        order1.put("reasonDetail", null);
         orders.add(order1);
         
         Map<String, Object> order2 = new HashMap<>();
@@ -35,6 +40,11 @@ public class CourierController {
         order2.put("address", "Jl. Sudirman No. 456, Jakarta");
         order2.put("createdAt", "2025-12-06 10:30");
         order2.put("description", "Sampah elektronik");
+        order2.put("latitude", -6.2088);
+        order2.put("longitude", 106.8456);
+        order2.put("photoProof", null);
+        order2.put("reason", null);
+        order2.put("reasonDetail", null);
         orders.add(order2);
         
         Map<String, Object> order3 = new HashMap<>();
@@ -46,6 +56,11 @@ public class CourierController {
         order3.put("address", "Jl. Gatot Subroto No. 789, Jakarta");
         order3.put("createdAt", "2025-12-06 11:45");
         order3.put("description", "Sampah organik dan limbah");
+        order3.put("latitude", -6.2297);
+        order3.put("longitude", 106.7837);
+        order3.put("photoProof", null);
+        order3.put("reason", null);
+        order3.put("reasonDetail", null);
         orders.add(order3);
         
         Map<String, Object> order4 = new HashMap<>();
@@ -57,6 +72,11 @@ public class CourierController {
         order4.put("address", "Jl. Thamrin No. 321, Jakarta");
         order4.put("createdAt", "2025-12-05 14:20");
         order4.put("description", "Sampah sisa makanan");
+        order4.put("latitude", -6.1944);
+        order4.put("longitude", 106.8296);
+        order4.put("photoProof", null);
+        order4.put("reason", null);
+        order4.put("reasonDetail", null);
         orders.add(order4);
         
         Map<String, Object> order5 = new HashMap<>();
@@ -68,6 +88,11 @@ public class CourierController {
         order5.put("address", "Jl. Ahmad Yani No. 555, Jakarta");
         order5.put("createdAt", "2025-12-05 16:00");
         order5.put("description", "Sampah logam bekas");
+        order5.put("latitude", -6.1753);
+        order5.put("longitude", 106.8249);
+        order5.put("photoProof", null);
+        order5.put("reason", "LOKASI_BERBAHAYA");
+        order5.put("reasonDetail", "Lokasi terletak di area yang berbahaya untuk dijangkau");
         orders.add(order5);
         
         return orders;
