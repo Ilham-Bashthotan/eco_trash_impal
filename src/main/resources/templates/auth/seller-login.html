@@ -1,157 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Login Seller - Eco Trash</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <style>
-        body {
-            background-color: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .login-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-            padding: 40px 35px;
-        }
-        .logo-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        .logo-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        .logo-subtitle {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        .login-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        .form-label { font-size: 0.875rem; font-weight: 500; }
-        .form-control { font-size: 0.9rem; padding: 10px 12px; }
-        .btn-login {
-            background-color: #28a745;
-            border: none;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .btn-login:hover {
-            background-color: #218838;
-        }
-        .form-text a { color: #28a745; text-decoration: none; }
-        .form-text a:hover {
-            text-decoration: underline;
-        }
-        .alert {
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 0.875rem;
-        }
-        .password-wrapper {
-            position: relative;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: #999;
-            cursor: pointer;
-            padding: 0;
-            font-size: 1.1rem;
-        }
-        .password-toggle:hover {
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/auth-style.css}">
 </head>
+
 <body>
-<div class="login-container">
+    <div class="login-container">
 
-    <div class="logo-section">
-        <div class="logo-icon">🛒♻️</div>
-        <h1 class="logo-title">Eco Trash</h1>
-        <p class="logo-subtitle">Lingkungan bersih karena<br>kita berani</p>
-    </div>
-
-    <h2 class="login-title">Login Seller</h2>
-
-    <div th:if="${error}" class="alert alert-danger" role="alert">
-        <i class="bi bi-exclamation-circle-fill me-2"></i>
-        <span th:text="${error}">Error message</span>
-    </div>
-    <div th:if="${success}" class="alert alert-success" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${success}">Success message</span>
-    </div>
-
-    <form method="post" th:action="@{/auth/seller/login}">
-        <div class="mb-3">
-            <label class="form-label" for="username">Username</label>
-            <input class="form-control" id="username" name="username" type="text" placeholder="Username" required autofocus>
+        <div class="logo-section">
+            <div class="logo-icon">🛒♻️</div>
+            <h1 class="logo-title">Eco Trash</h1>
+            <p class="logo-subtitle">Lingkungan bersih karena<br>kita berani</p>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" for="password">Password</label>
-            <div class="password-wrapper">
-                <input class="form-control" id="password" name="password" type="password" placeholder="Password" required style="padding-right: 40px;">
-                <button type="button" class="password-toggle" id="togglePassword">
-                    <i class="bi bi-eye" id="eyeIcon"></i>
-                </button>
+        <h2 class="login-title">Login Seller</h2>
+
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+            <span th:text="${error}">Error message</span>
+        </div>
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}">Success message</span>
+        </div>
+
+        <form method="post" th:action="@{/auth/seller/login}">
+            <div class="mb-3">
+                <label class="form-label" for="username">Username</label>
+                <input class="form-control" id="username" name="username" type="text" placeholder="Username" required
+                    autofocus>
             </div>
-        </div>
 
-        <button class="btn btn-success btn-login" type="submit">Login</button>
+            <div class="mb-3">
+                <label class="form-label" for="password">Password</label>
+                <div class="password-wrapper">
+                    <input class="form-control" id="password" name="password" type="password" placeholder="Password"
+                        required style="padding-right: 40px;">
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
 
-        <div class="form-text text-center">
-            Belum punya akun?
-            <a th:href="@{/auth/seller/signin}">Daftar</a>
-        </div>
-    </form>
-</div>
+            <button class="btn btn-success btn-login" type="submit">Login</button>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <div class="form-text text-center">
+                Belum punya akun?
+                <a th:href="@{/auth/seller/signin}">Daftar</a>
+            </div>
+        </form>
+    </div>
 
-<script>
-    const passwordInput = document.getElementById('password');
-    const togglePassword = document.getElementById('togglePassword');
-    const eyeIcon = document.getElementById('eyeIcon');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    togglePassword.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
+    <script>
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
 
-        if (type === 'password') {
-            eyeIcon.classList.remove('bi-eye-slash');
-            eyeIcon.classList.add('bi-eye');
-        } else {
-            eyeIcon.classList.remove('bi-eye');
-            eyeIcon.classList.add('bi-eye-slash');
-        }
-    });
-</script>
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'password') {
+                eyeIcon.classList.remove('bi-eye-slash');
+                eyeIcon.classList.add('bi-eye');
+            } else {
+                eyeIcon.classList.remove('bi-eye');
+                eyeIcon.classList.add('bi-eye-slash');
+            }
+        });
+    </script>
 </body>
+
 </html>

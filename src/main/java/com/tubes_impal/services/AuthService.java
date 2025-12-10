@@ -66,7 +66,7 @@ public class AuthService {
     }
 
     /**
-     * @param userId 
+     * @param userId
      * @return
      */
     public Optional<User> findById(Integer userId) {
@@ -74,11 +74,13 @@ public class AuthService {
     }
 
     /**
-     * @param username 
-     * @param email 
-     * @param password 
-     * @return 
-     * @throws Exception 
+     * Register new seller
+     * 
+     * @param username Username untuk login
+     * @param email    Email seller (akan disimpan di name field sementara)
+     * @param password Plain text password
+     * @return User object yang sudah disimpan
+     * @throws Exception Jika username sudah terdaftar
      */
     public User registerSeller(String username, String email, String password) throws Exception {
 
@@ -89,8 +91,8 @@ public class AuthService {
 
         User newSeller = new User();
         newSeller.setUsername(username);
-        newSeller.setEmail(email);
-        newSeller.setPassword(password);
+        newSeller.setName(username); // Set name sama dengan username
+        newSeller.setPassword(password); // Akan di-hash oleh register()
         newSeller.setRole(com.tubes_impal.entity.UserRole.SELLER);
 
         return register(newSeller);
