@@ -99,6 +99,11 @@ public class CourierController {
     }
     
     @GetMapping("/")
+    public String redirectToDashboard() {
+        return "redirect:/courier/dashboard";
+    }
+    
+    @GetMapping("/dashboard")
     public String CourierDashboard(Model model) {
         // Dummy data untuk courier
         model.addAttribute("courierName", "Budi Santoso");
