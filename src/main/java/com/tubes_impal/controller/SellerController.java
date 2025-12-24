@@ -1,5 +1,11 @@
 package com.tubes_impal.controller;
 
+import com.tubes_impal.services.SellerService;
+import com.tubes_impal.repos.ContactRepository;
+import com.tubes_impal.entity.Contact;
+import com.tubes_impal.repos.UserRepository;
+import com.tubes_impal.entity.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,187 +14,210 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/seller")
 public class SellerController {
 
-    // Helper method to create dummy orders list
-    private List<Map<String, Object>> getDummyOrders() {
-        List<Map<String, Object>> orders = new ArrayList<>();
+    private final SellerService sellerService;
+    private final ContactRepository contactRepository;
+    private final UserRepository userRepository;
 
-        Map<String, Object> order1 = new HashMap<>();
-        order1.put("id", 1);
-        order1.put("orderId", "TRX-2001");
-        order1.put("courierName", "Budi Santoso");
-        order1.put("status", "COMPLETED");
-        order1.put("weight", "2.5");
-        order1.put("amount", 50000);
-        order1.put("createdAt", "2025-12-10 09:45");
-        order1.put("description", "Sampah plastik dan kertas");
-        order1.put("photoProof", "/images/proof-1.jpg");
-        orders.add(order1);
+    public SellerController(SellerService sellerService,
+            ContactRepository contactRepository,
+            UserRepository userRepository) {
+        this.sellerService = sellerService;
+        this.contactRepository = contactRepository;
+        this.userRepository = userRepository;
+    }
 
-        Map<String, Object> order2 = new HashMap<>();
-        order2.put("id", 2);
-        order2.put("orderId", "TRX-2002");
-        order2.put("courierName", "Adi Wijaya");
-        order2.put("status", "COMPLETED");
-        order2.put("weight", "1.8");
-        order2.put("amount", 36000);
-        order2.put("createdAt", "2025-12-09 10:30");
-        order2.put("description", "Sampah elektronik");
-        order2.put("photoProof", "/images/proof-2.jpg");
-        orders.add(order2);
+    private Integer requireSeller(HttpSession session, RedirectAttributes redirectAttributes) {
+        Object userId = session.getAttribute("userId");
+        Object role = session.getAttribute("role");
 
-        Map<String, Object> order3 = new HashMap<>();
-        order3.put("id", 3);
-        order3.put("orderId", "TRX-2003");
-        order3.put("courierName", "Citra Dewi");
-        order3.put("status", "PENDING");
-        order3.put("weight", "3.2");
-        order3.put("amount", 64000);
-        order3.put("createdAt", "2025-12-08 11:45");
-        order3.put("description", "Sampah organik dan limbah");
-        order3.put("photoProof", null);
-        orders.add(order3);
+        if (userId == null || role == null || !"SELLER".equals(role.toString())) {
+            redirectAttributes.addFlashAttribute("error", "Silakan login sebagai seller terlebih dahulu");
+            return null;
+        }
 
-        Map<String, Object> order4 = new HashMap<>();
-        order4.put("id", 4);
-        order4.put("orderId", "TRX-2004");
-        order4.put("courierName", "Doni Pratama");
-        order4.put("status", "COMPLETED");
-        order4.put("weight", "1.5");
-        order4.put("amount", 30000);
-        order4.put("createdAt", "2025-12-07 14:20");
-        order4.put("description", "Sampah sisa makanan");
-        order4.put("photoProof", "/images/proof-4.jpg");
-        orders.add(order4);
-
-        Map<String, Object> order5 = new HashMap<>();
-        order5.put("id", 5);
-        order5.put("orderId", "TRX-2005");
-        order5.put("courierName", "Eka Sutrisna");
-        order5.put("status", "COMPLETED");
-        order5.put("weight", "0.9");
-        order5.put("amount", 18000);
-        order5.put("createdAt", "2025-12-06 16:00");
-        order5.put("description", "Sampah logam bekas");
-        order5.put("photoProof", "/images/proof-5.jpg");
-        orders.add(order5);
-
-        return orders;
+        return (Integer) userId;
     }
 
     @GetMapping("/")
-    public String SellerDashboard(Model model) {
-        // Dummy data untuk seller
-
-        // Dummy stats
-        model.addAttribute("totalTransactions", "128 transaksi");
-        model.addAttribute("currentBalance", "Rp 1.250.000");
-
-        // Dummy last order
-        List<Map<String, Object>> allOrders = getDummyOrders();
-        if (!allOrders.isEmpty()) {
-            model.addAttribute("lastOrder", allOrders.get(0));
+    public String SellerDashboard(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
         }
 
-        model.addAttribute("errorLoading", false);
-        model.addAttribute("sellerName", "Seller");
+        try {
+            Map<String, Object> dashboard = sellerService.getDashboardData(userId);
+            model.addAttribute("sellerName", dashboard.get("sellerName"));
+            model.addAttribute("totalTransactions", dashboard.get("totalTransactions"));
+            model.addAttribute("currentBalance", dashboard.get("currentBalance"));
+            model.addAttribute("lastOrder", dashboard.get("lastOrder"));
+            model.addAttribute("errorLoading", dashboard.get("errorLoading"));
+        } catch (Exception e) {
+            model.addAttribute("errorLoading", true);
+            model.addAttribute("sellerName", "Seller");
+        }
 
         return "seller/seller-dashboard";
     }
 
     @GetMapping("/dashboard")
-    public String SellerDashboardAlternative(Model model) {
-        return SellerDashboard(model);
+    public String SellerDashboardAlternative(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        return SellerDashboard(model, session, redirectAttributes);
     }
 
     @GetMapping("/orders")
-    public String SellerOrders(Model model) {
-        List<Map<String, Object>> allOrders = getDummyOrders();
-        model.addAttribute("orders", allOrders);
-        model.addAttribute("sellerName", "Seller");
+    public String SellerOrders(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
+        }
+
+        List<Map<String, Object>> orders = sellerService.getOrders(userId);
+        model.addAttribute("orders", orders);
+        model.addAttribute("sellerName", session.getAttribute("username"));
         return "seller/seller-riwayat-orders";
     }
 
     @GetMapping("/orders/{id}")
-    public String SellerOrderDetail(@PathVariable Long id, Model model) {
-
-        List<Map<String, Object>> allOrders = getDummyOrders();
-        Map<String, Object> order = null;
-
-        for (Map<String, Object> o : allOrders) {
-            if (((Number) o.get("id")).longValue() == id) {
-                order = o;
-                break;
-            }
+    public String SellerOrderDetail(@PathVariable Long id,
+            Model model,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
         }
 
-        if (order == null) {
-            // Default order jika tidak ditemukan
-            order = new HashMap<>();
-            order.put("id", id);
-            order.put("orderId", "TRX-NOT-FOUND");
-            order.put("courierName", "Unknown");
-            order.put("status", "UNKNOWN");
-            order.put("weight", "0");
-            order.put("amount", 0);
-            order.put("createdAt", "N/A");
-            order.put("description", "Order tidak ditemukan");
+        try {
+            Map<String, Object> order = sellerService.getOrderDetail(userId, id);
+            model.addAttribute("order", order);
+            model.addAttribute("sellerName", session.getAttribute("username"));
+            return "seller/seller-rincian-orders";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/seller/orders";
         }
-
-        model.addAttribute("order", order);
-        model.addAttribute("sellerName", "Seller");
-        return "seller/seller-rincian-orders";
     }
 
     @GetMapping("/profile")
-    public String SellerProfile(Model model) {
-        model.addAttribute("sellerName", "Seller");
-        model.addAttribute("sellerEmail", "alice@shop.com");
-        model.addAttribute("sellerPhone", "08123456789");
-        model.addAttribute("sellerAddress", "Jl. Merdeka No. 123, Bandung");
-        model.addAttribute("totalEarning", "Rp 12.500.000");
-        model.addAttribute("totalTransactions", "128");
+    public String SellerProfile(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
+        }
+        Contact contact = contactRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        model.addAttribute("sellerName", user != null ? user.getName() : session.getAttribute("username"));
+        model.addAttribute("contact", contact);
         return "seller/seller-profile";
     }
 
+    @GetMapping("/profile/edit")
+    public String SellerProfileEdit(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
+        }
+        Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
+            Contact c = new Contact();
+            User u = userRepository.findById(userId).orElse(null);
+            c.setUser(u);
+            return c;
+        });
+        model.addAttribute("contact", contact);
+        model.addAttribute("sellerName", session.getAttribute("username"));
+        return "seller/seller-profile-edit";
+    }
+
+    @PostMapping("/profile/edit")
+    public String SellerProfileEditSubmit(@RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
+        }
+
+        Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
+            Contact c = new Contact();
+            User u = userRepository.findById(userId).orElse(null);
+            c.setUser(u);
+            return c;
+        });
+
+        contact.setFirstName(firstName);
+        contact.setLastName(lastName);
+        contact.setPhoneNumber(phoneNumber);
+        contact.setEmail(email);
+        contact.setAddress(address);
+        contact.setLatitude(latitude);
+        contact.setLongitude(longitude);
+
+        contactRepository.save(contact);
+        redirectAttributes.addFlashAttribute("success", "Profil berhasil diperbarui");
+        return "redirect:/seller/profile";
+    }
+
     @GetMapping("/kirim-sampah")
-    public String SellerKirimSampah(Model model) {
-        model.addAttribute("sellerName", "Seller");
+    public String SellerKirimSampah(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
+        }
+
+        // Cek kelengkapan profil sebelum menampilkan form
+        Contact contact = contactRepository.findByUserId(userId).orElse(null);
+        if (contact == null || isBlank(contact.getEmail()) || isBlank(contact.getAddress())) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Profil belum lengkap. Harap lengkapi email dan alamat terlebih dahulu sebelum mengirim sampah.");
+            return "redirect:/seller/profile/edit";
+        }
+
+        model.addAttribute("sellerName", session.getAttribute("username"));
         return "seller/seller-kirim-sampah";
     }
 
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
     @PostMapping("/kirim-sampah")
-    public String SellerKirimSampahSubmit(@RequestParam("imageFile") MultipartFile imageFile, Model model) {
-        model.addAttribute("sellerName", "Seller");
-
-        if (imageFile.isEmpty()) {
-            model.addAttribute("errorMessage", "File tidak dipilih. Silakan pilih gambar terlebih dahulu.");
-            return "seller/seller-kirim-sampah";
+    public String SellerKirimSampahSubmit(@RequestParam("imageFile") MultipartFile imageFile,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(session, redirectAttributes);
+        if (userId == null) {
+            return "redirect:/auth/seller/login";
         }
 
-        // Validasi ukuran file (max 10 MB)
-        long maxSize = 10 * 1024 * 1024;
-        if (imageFile.getSize() > maxSize) {
-            model.addAttribute("errorMessage", "File terlalu besar. Ukuran maksimal adalah 10 MB.");
-            return "seller/seller-kirim-sampah";
+        try {
+            sellerService.submitTrash(userId, imageFile);
+            redirectAttributes.addFlashAttribute("success", 
+                "Gambar berhasil dikirim dan order dibuat!" +
+                (imageFile.getOriginalFilename() != null ? " File: " + imageFile.getOriginalFilename() : ""));
+            return "redirect:/seller/orders";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/seller/kirim-sampah";
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal menyimpan file: " + e.getMessage());
+            return "redirect:/seller/kirim-sampah";
         }
-
-        // Validasi tipe file
-        String contentType = imageFile.getContentType();
-        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
-            model.addAttribute("errorMessage", "Format file tidak didukung. Gunakan JPEG atau PNG.");
-            return "seller/seller-kirim-sampah";
-        }
-
-        // TODO: Simpan file ke storage dan proses pesanan
-        // Untuk sekarang hanya tampilkan success message
-        model.addAttribute("successMessage", "Gambar berhasil dikirim! File: " + imageFile.getOriginalFilename());
-
-        return "seller/seller-kirim-sampah";
     }
 }

@@ -99,7 +99,7 @@
                 </ul>
 
                 <div class="d-flex align-items-center">
-                    <span class="text-muted me-3" th:text="${sellerName}">Seller</span>
+                    <a class="nav-link" th:text="${sellerName}" th:href="@{/seller/profile}">Seller</a>
                     <form method="post" th:action="@{/auth/seller/logout}" style="margin: 0;">
                         <button type="submit" class="btn btn-logout">Keluar</button>
                     </form>

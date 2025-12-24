@@ -1,7 +1,9 @@
 package com.tubes_impal.services;
 
 import com.tubes_impal.entity.User;
+import com.tubes_impal.entity.Seller;
 import com.tubes_impal.repos.UserRepository;
+import com.tubes_impal.repos.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -95,6 +100,13 @@ public class AuthService {
         newSeller.setPassword(password); // Akan di-hash oleh register()
         newSeller.setRole(com.tubes_impal.entity.UserRole.SELLER);
 
-        return register(newSeller);
+        User savedUser = register(newSeller);
+
+        Seller seller = new Seller();
+        seller.setUser(savedUser);
+        seller.setBalance(0.0);
+        sellerRepository.save(seller);
+
+        return savedUser;
     }
 }
