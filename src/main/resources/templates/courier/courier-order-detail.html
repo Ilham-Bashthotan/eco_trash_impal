@@ -1,349 +1,347 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="utf-8"/>
-  <title>Detail Pesanan - Courier</title>
-  <link href="/css/admin-style.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>
-    .order-detail-container {
-      background: white;
-      border-radius: 8px;
-      padding: 30px;
-      margin-top: 20px;
-    }
-    
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 30px;
-      border-bottom: 2px solid #f0f0f0;
-      padding-bottom: 20px;
-    }
-    
-    .order-header-title h2 {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 0;
-    }
-    
-    .order-header-title p {
-      color: #999;
-      font-size: 14px;
-      margin: 5px 0 0 0;
-    }
-    
-    .status-badge {
-      background-color: #ffc107;
-      color: black;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    
-    .status-badge.pending {
-      background-color: #17a2b8;
-      color: white;
-    }
-    
-    .status-badge.picked-up {
-      background-color: #ffc107;
-      color: black;
-    }
-    
-    .status-badge.delivered {
-      background-color: #007bff;
-      color: white;
-    }
-    
-    .status-badge.completed {
-      background-color: #28a745;
-      color: white;
-    }
-    
-    .order-timestamp {
-      text-align: right;
-      font-size: 12px;
-      color: #999;
-    }
-    
-    .order-info-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 40px;
-    }
-    
-    .info-row {
-      margin-bottom: 20px;
-    }
-    
-    .info-label {
-      font-size: 12px;
-      color: #999;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-    
-    .info-value {
-      font-size: 16px;
-      color: #333;
-      font-weight: 500;
-    }
-    
-    .photo-section {
-      background-color: #f5f5f5;
-      border: 2px dashed #ddd;
-      border-radius: 8px;
-      padding: 40px;
-      text-align: center;
-      margin-bottom: 20px;
-      min-height: 250px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .photo-placeholder {
-      color: #ccc;
-      font-size: 14px;
-    }
-    
-    .reason-section {
-      background-color: #f9f9f9;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    
-    .reason-dropdown {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    
-    .reason-textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      min-height: 80px;
-      margin-top: 10px;
-      font-family: inherit;
-    }
-    
-    .map-placeholder {
-      background-color: #f5f5f5;
-      border: 2px dashed #ddd;
-      border-radius: 8px;
-      padding: 60px 20px;
-      text-align: center;
-      color: #ccc;
-      min-height: 300px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 2px solid #f0f0f0;
-    }
-    
-    .btn-action {
-      padding: 10px 20px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-primary-action {
-      background-color: #007bff;
-      color: white;
-    }
-    
-    .btn-primary-action:hover {
-      background-color: #0056b3;
-    }
-    
-    .btn-back {
-      background-color: #f0f0f0;
-      color: #333;
-      border: 1px solid #ddd;
-    }
-    
-    .btn-back:hover {
-      background-color: #e0e0e0;
-    }
-    
-    .note-text {
-      font-size: 12px;
-      color: #999;
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #f9f9f9;
-      border-left: 3px solid #ccc;
-      border-radius: 4px;
-    }
-  </style>
+    <meta charset="utf-8" />
+    <title>Detail Pesanan - Courier</title>
+    <link href="/css/admin-style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .order-detail-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        .order-header-title h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .order-header-title p {
+            color: #999;
+            font-size: 14px;
+            margin: 5px 0 0 0;
+        }
+
+        .status-badge {
+            background-color: #ffc107;
+            color: black;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .status-badge.pending {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .status-badge.picked-up {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .status-badge.delivered {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .status-badge.completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .order-timestamp {
+            text-align: right;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .order-info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .info-row {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .photo-section {
+            background-color: #f5f5f5;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-placeholder {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .reason-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .reason-dropdown {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .reason-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 80px;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+
+        .map-placeholder {
+            background-color: #f5f5f5;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 60px 20px;
+            text-align: center;
+            color: #ccc;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-action {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary-action:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-back {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-back:hover {
+            background-color: #e0e0e0;
+        }
+
+        .note-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
+
 <body>
-  <div th:replace="~{components/courier-header :: navbar}"></div>
+    <div th:replace="~{components/courier-header :: navbar}"></div>
 
-  <div class="container">
-    <div class="order-detail-container">
-      <!-- Header -->
-      <div class="order-header">
-        <div class="order-header-title">
-          <h2>Detail Pesanan</h2>
-          <p>Halaman detail lengkap pesanan — fungsi: lihat info & proses sesuai Use Case 13-16</p>
-        </div>
-        <div style="text-align: right;">
-          <div class="order-timestamp">
-            Status saat ini:<br>
-            <span class="status-badge" th:classappend="${order.status.toString().toLowerCase().replace('_', '-')}" th:text="${order.status}">PICKED_UP</span>
-          </div>
-          <div class="order-timestamp" style="margin-top: 10px;">
-            Order time: <strong th:text="${order.createdAt}">2025-11-24 09:45</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Info Section -->
-      <div class="order-info-section">
-        <!-- Left Column -->
-        <div>
-          <div class="info-row">
-            <div class="info-label">Order ID</div>
-            <div class="info-value" th:text="${order.orderId} + ' — ' + ${order.sellerName}">ORD-1001 — Alice</div>
-          </div>
-          <div class="info-row">
-            <div class="info-label">Alamat</div>
-            <div class="info-value" th:text="${order.address}">Jl. Merdeka 12, Bandung</div>
-          </div>
-        </div>
-
-        <!-- Right Column - Photo -->
-        <div>
-          <div class="info-label">Foto Bukti</div>
-          <div class="photo-section">
-            <div class="photo-placeholder">No photo uploaded (placeholder)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Secondary Info -->
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <div class="info-row">
-            <div class="info-label">Catatan</div>
-            <div class="info-value" th:text="${order.description}">Harap jangan buang sampah basah ke plastik</div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="info-row">
-            <div class="info-label">Berat Sampah (kg)</div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-              <input type="number" 
-                     class="form-control" 
-                     id="trashWeight" 
-                     th:value="${order.weight}" 
-                     th:disabled="${order.status.toString() != 'PICKED_UP'}"
-                     placeholder="Masukkan berat sampah" 
-                     step="0.1" 
-                     min="0"
-                     style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-              <span style="color: #999; font-size: 14px;">kg</span>
+    <div class="container">
+        <div class="order-detail-container">
+            <!-- Header -->
+            <div class="order-header">
+                <div class="order-header-title">
+                    <h2>Detail Pesanan</h2>
+                    <p>Halaman detail lengkap pesanan — fungsi: lihat info & proses sesuai Use Case 13-16</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="order-timestamp">
+                        Status saat ini:<br>
+                        <span class="status-badge"
+                            th:classappend="${order.status.toString().toLowerCase().replace('_', '-')}"
+                            th:text="${order.status}">PICKED_UP</span>
+                    </div>
+                    <div class="order-timestamp" style="margin-top: 10px;">
+                        Order time: <strong th:text="${order.createdAt}">2025-11-24 09:45</strong>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
+
+            <!-- Order Info Section -->
+            <div class="order-info-section">
+                <!-- Left Column -->
+                <div>
+                    <div class="info-row">
+                        <div class="info-label">Order ID</div>
+                        <div class="info-value" th:text="${order.orderId} + ' — ' + ${order.sellerName}">ORD-1001 —
+                            Alice</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Alamat</div>
+                        <div class="info-value" th:text="${order.address}">Jl. Merdeka 12, Bandung</div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Photo -->
+                <div>
+                    <div class="info-label">Foto Bukti</div>
+                    <div class="photo-section">
+                        <div class="photo-placeholder">No photo uploaded (placeholder)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="info-row">
+                        <div class="info-label">Catatan</div>
+                        <div class="info-value" th:text="${order.description}">Harap jangan buang sampah basah ke
+                            plastik</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row">
+                        <div class="info-label">Berat Sampah (kg)</div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" class="form-control" id="trashWeight" th:value="${order.weight}"
+                                th:disabled="${order.status.toString() != 'PICKED_UP'}"
+                                placeholder="Masukkan berat sampah" step="0.1" min="0"
+                                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <span style="color: #999; font-size: 14px;">kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
-      <!-- Location Map -->
-      <div style="margin-top: 30px;">
-        <div class="info-label">Lokasi</div>
-        <div class="map-placeholder">
-          Map placeholder (integrate Google Maps later)<br>
-          <small>Lat: <span th:text="${order.latitude}">-6.9271</span>, Long: <span th:text="${order.longitude}">107.6411</span></small>
-        </div>
-      </div>
+            <!-- Location Map -->
+            <div style="margin-top: 30px;">
+                <div class="info-label">Lokasi</div>
+                <div class="map-placeholder">
+                    Map placeholder (integrate Google Maps later)<br>
+                    <small>Lat: <span th:text="${order.latitude}">-6.9271</span>, Long: <span
+                            th:text="${order.longitude}">107.6411</span></small>
+                </div>
+            </div>
 
-      <!-- Alasan Pembatalan Section (jika diperlukan) -->
-      <div class="reason-section" id="cancelReasonSection" style="display: none;">
-        <div style="margin-bottom: 15px;">
-          <strong>Alasan pembatalan</strong>
-          <p style="font-size: 12px; color: #999; margin-top: 5px;">Catatan aksi akan memvalidasi status saat ini sesuai transisi yang dizinkan.</p>
-        </div>
-        
-        <label style="font-size: 12px; color: #666; margin-bottom: 8px; display: block;">
-          <strong>Pilih Alasan Pembatalan</strong>
-        </label>
-        <select id="cancellationReason" class="reason-dropdown">
-          <option value="">-- Pilih alasan --</option>
-          <option value="ALAMAT_TIDAK_JELAS">Alamat Tidak Jelas</option>
-          <option value="PENERIMA_TIDAK_ADA">Penerima Tidak Ada</option>
-          <option value="LOKASI_BERBAHAYA">Lokasi Berbahaya</option>
-          <option value="LAINNYA">Lainnya</option>
-        </select>
+            <!-- Alasan Pembatalan Section (jika diperlukan) -->
+            <div class="reason-section" id="cancelReasonSection" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <strong>Alasan pembatalan</strong>
+                    <p style="font-size: 12px; color: #999; margin-top: 5px;">Catatan aksi akan memvalidasi status saat
+                        ini sesuai transisi yang dizinkan.</p>
+                </div>
 
-        <label style="font-size: 12px; color: #666; margin: 15px 0 8px 0; display: block;">
-          <strong>Keterangan Tambahan</strong>
-        </label>
-        <textarea id="cancellationDetail" class="reason-textarea" placeholder="Masukkan keterangan tambahan..."></textarea>
-      </div>
-      <!-- Action Buttons -->
+                <label style="font-size: 12px; color: #666; margin-bottom: 8px; display: block;">
+                    <strong>Pilih Alasan Pembatalan</strong>
+                </label>
+                <select id="cancellationReason" class="reason-dropdown">
+                    <option value="">-- Pilih alasan --</option>
+                    <option value="ALAMAT_TIDAK_JELAS">Alamat Tidak Jelas</option>
+                    <option value="PENERIMA_TIDAK_ADA">Penerima Tidak Ada</option>
+                    <option value="LOKASI_BERBAHAYA">Lokasi Berbahaya</option>
+                    <option value="LAINNYA">Lainnya</option>
+                </select>
+
+                <label style="font-size: 12px; color: #666; margin: 15px 0 8px 0; display: block;">
+                    <strong>Keterangan Tambahan</strong>
+                </label>
+                <textarea id="cancellationDetail" class="reason-textarea"
+                    placeholder="Masukkan keterangan tambahan..."></textarea>
+            </div>
+            <!-- Action Buttons -->
             <div class="action-buttons">
-        <button th:if="${order.status.toString() == 'PENDING'}" 
-          class="btn btn-action btn-primary-action" 
-          th:attr="data-id=${order.id}" 
-          onclick="processPickup(this)">Ambil Pesanan</button>
-        
-        <button th:if="${order.status.toString() == 'PICKED_UP'}" 
-          class="btn btn-action btn-primary-action" 
-          th:attr="data-id=${order.id}" 
-          onclick="markDelivered(this)">Pesanan Diterima</button>
-        
-        <button th:if="${order.status.toString() == 'DELIVERED'}" 
-          class="btn btn-action btn-primary-action" 
-          th:attr="data-id=${order.id}" 
-          onclick="completeOrder(this)">Selesai</button>
-        
-        <button th:if="${order.status.toString() != 'COMPLETED' and order.status.toString() != 'CANCELLED'}" class="btn btn-action" 
-          style="background-color: #dc3545; color: white;" 
-          onclick="toggleCancelReason()">Batal</button>
-        
-        <a class="btn btn-action btn-back" th:href="@{/courier/orders}">Kembali</a>
+                <button th:if="${order.status.toString() == 'PENDING'}" class="btn btn-action btn-primary-action"
+                    th:attr="data-id=${order.id}" onclick="processPickup(this)">Ambil Pesanan</button>
+
+                <button th:if="${order.status.toString() == 'PICKED_UP'}" class="btn btn-action btn-primary-action"
+                    th:attr="data-id=${order.id}" onclick="markDelivered(this)">Pesanan Diterima</button>
+
+                <button th:if="${order.status.toString() == 'DELIVERED'}" class="btn btn-action btn-primary-action"
+                    th:attr="data-id=${order.id}" onclick="completeOrder(this)">Selesai</button>
+
+                <button th:if="${order.status.toString() != 'COMPLETED' and order.status.toString() != 'CANCELLED'}"
+                    class="btn btn-action" style="background-color: #dc3545; color: white;"
+                    onclick="toggleCancelReason()">Batal</button>
+
+                <a class="btn btn-action btn-back" th:href="@{/courier/orders}">Kembali</a>
             </div>
 
+        </div>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/courier.js"></script>
-  
-  <script>
-    function toggleCancelReason() {
-      const cancelReasonSection = document.getElementById('cancelReasonSection');
-      if (cancelReasonSection.style.display === 'none') {
-        cancelReasonSection.style.display = 'block';
-        cancelReasonSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        cancelReasonSection.style.display = 'none';
-      }
-    }
-  </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/courier.js"></script>
+
+    <script>
+        function toggleCancelReason() {
+            const cancelReasonSection = document.getElementById('cancelReasonSection');
+            if (cancelReasonSection.style.display === 'none') {
+                cancelReasonSection.style.display = 'block';
+                cancelReasonSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                cancelReasonSection.style.display = 'none';
+            }
+        }
+    </script>
 </body>
-</html>
 
+</html>

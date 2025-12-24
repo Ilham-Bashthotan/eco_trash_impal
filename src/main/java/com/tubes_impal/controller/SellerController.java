@@ -13,11 +13,11 @@ import java.util.*;
 @Controller
 @RequestMapping("/seller")
 public class SellerController {
-    
+
     // Helper method to create dummy orders list
     private List<Map<String, Object>> getDummyOrders() {
         List<Map<String, Object>> orders = new ArrayList<>();
-        
+
         Map<String, Object> order1 = new HashMap<>();
         order1.put("id", 1);
         order1.put("orderId", "TRX-2001");
@@ -29,7 +29,7 @@ public class SellerController {
         order1.put("description", "Sampah plastik dan kertas");
         order1.put("photoProof", "/images/proof-1.jpg");
         orders.add(order1);
-        
+
         Map<String, Object> order2 = new HashMap<>();
         order2.put("id", 2);
         order2.put("orderId", "TRX-2002");
@@ -41,7 +41,7 @@ public class SellerController {
         order2.put("description", "Sampah elektronik");
         order2.put("photoProof", "/images/proof-2.jpg");
         orders.add(order2);
-        
+
         Map<String, Object> order3 = new HashMap<>();
         order3.put("id", 3);
         order3.put("orderId", "TRX-2003");
@@ -53,7 +53,7 @@ public class SellerController {
         order3.put("description", "Sampah organik dan limbah");
         order3.put("photoProof", null);
         orders.add(order3);
-        
+
         Map<String, Object> order4 = new HashMap<>();
         order4.put("id", 4);
         order4.put("orderId", "TRX-2004");
@@ -65,7 +65,7 @@ public class SellerController {
         order4.put("description", "Sampah sisa makanan");
         order4.put("photoProof", "/images/proof-4.jpg");
         orders.add(order4);
-        
+
         Map<String, Object> order5 = new HashMap<>();
         order5.put("id", 5);
         order5.put("orderId", "TRX-2005");
@@ -77,35 +77,35 @@ public class SellerController {
         order5.put("description", "Sampah logam bekas");
         order5.put("photoProof", "/images/proof-5.jpg");
         orders.add(order5);
-        
+
         return orders;
     }
-    
+
     @GetMapping("/")
     public String SellerDashboard(Model model) {
         // Dummy data untuk seller
-        
+
         // Dummy stats
         model.addAttribute("totalTransactions", "128 transaksi");
         model.addAttribute("currentBalance", "Rp 1.250.000");
-        
+
         // Dummy last order
         List<Map<String, Object>> allOrders = getDummyOrders();
         if (!allOrders.isEmpty()) {
             model.addAttribute("lastOrder", allOrders.get(0));
         }
-        
+
         model.addAttribute("errorLoading", false);
         model.addAttribute("sellerName", "Seller");
-        
+
         return "seller/seller-dashboard";
     }
-    
+
     @GetMapping("/dashboard")
     public String SellerDashboardAlternative(Model model) {
         return SellerDashboard(model);
     }
-    
+
     @GetMapping("/orders")
     public String SellerOrders(Model model) {
         List<Map<String, Object>> allOrders = getDummyOrders();
@@ -113,20 +113,20 @@ public class SellerController {
         model.addAttribute("sellerName", "Seller");
         return "seller/seller-riwayat-orders";
     }
-    
+
     @GetMapping("/orders/{id}")
     public String SellerOrderDetail(@PathVariable Long id, Model model) {
-        
+
         List<Map<String, Object>> allOrders = getDummyOrders();
         Map<String, Object> order = null;
-        
+
         for (Map<String, Object> o : allOrders) {
             if (((Number) o.get("id")).longValue() == id) {
                 order = o;
                 break;
             }
         }
-        
+
         if (order == null) {
             // Default order jika tidak ditemukan
             order = new HashMap<>();
@@ -139,12 +139,12 @@ public class SellerController {
             order.put("createdAt", "N/A");
             order.put("description", "Order tidak ditemukan");
         }
-        
+
         model.addAttribute("order", order);
         model.addAttribute("sellerName", "Seller");
         return "seller/seller-rincian-orders";
     }
-    
+
     @GetMapping("/profile")
     public String SellerProfile(Model model) {
         model.addAttribute("sellerName", "Seller");

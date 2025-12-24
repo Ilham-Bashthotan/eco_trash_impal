@@ -8,10 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
-    
+
     Optional<Contact> findByUserId(Integer userId);
-    
+
     Optional<Contact> findByEmail(String email);
-    
+
     Optional<Contact> findByPhoneNumber(String phoneNumber);
 }

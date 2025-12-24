@@ -9,12 +9,12 @@ import java.util.Optional;
 
 @Repository
 public interface SellerRepository extends JpaRepository<Seller, Integer> {
-    
+
     Optional<Seller> findByUserId(Integer userId);
-    
+
     Optional<Seller> findByUserUsername(String username);
-    
+
     boolean existsByUserId(Integer userId);
-    
+
     List<Seller> findByBalanceGreaterThanEqual(Double minBalance);
 }

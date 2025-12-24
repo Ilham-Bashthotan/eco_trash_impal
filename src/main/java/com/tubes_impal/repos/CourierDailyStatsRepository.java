@@ -10,12 +10,12 @@ import java.util.Optional;
 
 @Repository
 public interface CourierDailyStatsRepository extends JpaRepository<CourierDailyStats, Integer> {
-    
+
     Optional<CourierDailyStats> findByCourierIdAndDate(Integer courierId, LocalDate date);
-    
+
     List<CourierDailyStats> findByCourierId(Integer courierId);
-    
+
     List<CourierDailyStats> findByDate(LocalDate date);
-    
+
     List<CourierDailyStats> findByCourierIdAndDateBetween(Integer courierId, LocalDate startDate, LocalDate endDate);
 }

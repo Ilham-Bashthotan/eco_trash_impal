@@ -10,16 +10,16 @@ import java.util.Optional;
 
 @Repository
 public interface CourierRepository extends JpaRepository<Courier, Integer> {
-    
+
     Optional<Courier> findByUserId(Integer userId);
-    
+
     Optional<Courier> findByUserUsername(String username);
-    
+
     boolean existsByUserId(Integer userId);
-    
+
     List<Courier> findByStatus(StatusCourier status);
-    
+
     List<Courier> findByHiredById(Integer adminId);
-    
+
     List<Courier> findAllByOrderBySuccessfulDeliveriesDesc();
 }

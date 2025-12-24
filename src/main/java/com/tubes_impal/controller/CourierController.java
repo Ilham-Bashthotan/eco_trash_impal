@@ -10,11 +10,11 @@ import java.util.*;
 @Controller
 @RequestMapping("/courier")
 public class CourierController {
-    
+
     // Helper method to create dummy orders list
     private List<Map<String, Object>> getDummyOrders() {
         List<Map<String, Object>> orders = new ArrayList<>();
-        
+
         Map<String, Object> order1 = new HashMap<>();
         order1.put("id", 1);
         order1.put("orderId", "ORD-1001");
@@ -30,7 +30,7 @@ public class CourierController {
         order1.put("reason", null);
         order1.put("reasonDetail", null);
         orders.add(order1);
-        
+
         Map<String, Object> order2 = new HashMap<>();
         order2.put("id", 2);
         order2.put("orderId", "ORD-1002");
@@ -46,7 +46,7 @@ public class CourierController {
         order2.put("reason", null);
         order2.put("reasonDetail", null);
         orders.add(order2);
-        
+
         Map<String, Object> order3 = new HashMap<>();
         order3.put("id", 3);
         order3.put("orderId", "ORD-1003");
@@ -62,7 +62,7 @@ public class CourierController {
         order3.put("reason", null);
         order3.put("reasonDetail", null);
         orders.add(order3);
-        
+
         Map<String, Object> order4 = new HashMap<>();
         order4.put("id", 4);
         order4.put("orderId", "ORD-1004");
@@ -78,7 +78,7 @@ public class CourierController {
         order4.put("reason", null);
         order4.put("reasonDetail", null);
         orders.add(order4);
-        
+
         Map<String, Object> order5 = new HashMap<>();
         order5.put("id", 5);
         order5.put("orderId", "ORD-1005");
@@ -94,27 +94,27 @@ public class CourierController {
         order5.put("reason", "LOKASI_BERBAHAYA");
         order5.put("reasonDetail", "Lokasi terletak di area yang berbahaya untuk dijangkau");
         orders.add(order5);
-        
+
         return orders;
     }
-    
+
     @GetMapping("/")
     public String redirectToDashboard() {
         return "redirect:/courier/dashboard";
     }
-    
+
     @GetMapping("/dashboard")
     public String CourierDashboard(Model model) {
         // Dummy data untuk courier
         model.addAttribute("courierName", "Budi Santoso");
-        
+
         // Dummy stats
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalCompleted", 42);
         stats.put("totalWeight", "156.75");
         stats.put("totalPhotoOrders", 18);
         model.addAttribute("stats", stats);
-        
+
         // Dummy active orders (filtered)
         List<Map<String, Object>> allOrders = getDummyOrders();
         List<Map<String, Object>> activeOrders = new ArrayList<>();
@@ -124,12 +124,12 @@ public class CourierController {
                 activeOrders.add(order);
             }
         }
-        
+
         model.addAttribute("activeOrders", activeOrders);
-        
+
         return "courier/courier-dashboard";
     }
-    
+
     @GetMapping("/orders")
     public String CourierOrders(Model model) {
         model.addAttribute("courierName", "Budi Santoso");
@@ -137,21 +137,21 @@ public class CourierController {
         model.addAttribute("orders", allOrders);
         return "courier/courier-orders";
     }
-    
+
     @GetMapping("/orders/{id}")
     public String CourierOrderDetail(@PathVariable Long id, Model model) {
         model.addAttribute("courierName", "Budi Santoso");
-        
+
         List<Map<String, Object>> allOrders = getDummyOrders();
         Map<String, Object> order = null;
-        
+
         for (Map<String, Object> o : allOrders) {
             if (((Number) o.get("id")).longValue() == id) {
                 order = o;
                 break;
             }
         }
-        
+
         if (order == null) {
             // Default order jika tidak ditemukan
             order = new HashMap<>();
@@ -164,9 +164,8 @@ public class CourierController {
             order.put("createdAt", "N/A");
             order.put("description", "Order tidak ditemukan");
         }
-        
+
         model.addAttribute("order", order);
         return "courier/courier-order-detail";
     }
 }
-
