@@ -5,7 +5,8 @@ import com.tubes_impal.repos.ContactRepository;
 import com.tubes_impal.entity.Contact;
 import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.entity.User;
-import jakarta.servlet.http.HttpSession;
+import com.tubes_impal.utils.SessionHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,21 +37,17 @@ public class SellerController {
         this.userRepository = userRepository;
     }
 
-    private Integer requireSeller(HttpSession session, RedirectAttributes redirectAttributes) {
-        Object userId = session.getAttribute("userId");
-        Object role = session.getAttribute("role");
-
-        if (userId == null || role == null || !"SELLER".equals(role.toString())) {
+    private Integer requireSeller(HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        if (!SessionHelper.isAuthenticated(request, "SELLER")) {
             redirectAttributes.addFlashAttribute("error", "Silakan login sebagai seller terlebih dahulu");
             return null;
         }
-
-        return (Integer) userId;
+        return SessionHelper.getUserId(request, "SELLER");
     }
 
     @GetMapping("/")
-    public String SellerDashboard(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+    public String SellerDashboard(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
@@ -71,29 +68,30 @@ public class SellerController {
     }
 
     @GetMapping("/dashboard")
-    public String SellerDashboardAlternative(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        return SellerDashboard(model, session, redirectAttributes);
+    public String SellerDashboardAlternative(Model model, HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        return SellerDashboard(model, request, redirectAttributes);
     }
 
     @GetMapping("/orders")
-    public String SellerOrders(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+    public String SellerOrders(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
 
         List<Map<String, Object>> orders = sellerService.getOrders(userId);
         model.addAttribute("orders", orders);
-        model.addAttribute("sellerName", session.getAttribute("username"));
+        model.addAttribute("sellerName", SessionHelper.getUsername(request, "SELLER"));
         return "seller/seller-riwayat-orders";
     }
 
     @GetMapping("/orders/{id}")
     public String SellerOrderDetail(@PathVariable Long id,
             Model model,
-            HttpSession session,
+            HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
@@ -101,7 +99,7 @@ public class SellerController {
         try {
             Map<String, Object> order = sellerService.getOrderDetail(userId, id);
             model.addAttribute("order", order);
-            model.addAttribute("sellerName", session.getAttribute("username"));
+            model.addAttribute("sellerName", SessionHelper.getUsername(request, "SELLER"));
             return "seller/seller-rincian-orders";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -110,21 +108,21 @@ public class SellerController {
     }
 
     @GetMapping("/profile")
-    public String SellerProfile(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+    public String SellerProfile(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
         Contact contact = contactRepository.findByUserId(userId).orElse(null);
         User user = userRepository.findById(userId).orElse(null);
-        model.addAttribute("sellerName", user != null ? user.getName() : session.getAttribute("username"));
+        model.addAttribute("sellerName", user != null ? user.getName() : SessionHelper.getUsername(request, "SELLER"));
         model.addAttribute("contact", contact);
         return "seller/seller-profile";
     }
 
     @GetMapping("/profile/edit")
-    public String SellerProfileEdit(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+    public String SellerProfileEdit(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
@@ -135,7 +133,7 @@ public class SellerController {
             return c;
         });
         model.addAttribute("contact", contact);
-        model.addAttribute("sellerName", session.getAttribute("username"));
+        model.addAttribute("sellerName", SessionHelper.getUsername(request, "SELLER"));
         return "seller/seller-profile-edit";
     }
 
@@ -147,9 +145,9 @@ public class SellerController {
             @RequestParam(required = false) String address,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,
-            HttpSession session,
+            HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
@@ -175,8 +173,8 @@ public class SellerController {
     }
 
     @GetMapping("/kirim-sampah")
-    public String SellerKirimSampah(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+    public String SellerKirimSampah(Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }
@@ -189,7 +187,7 @@ public class SellerController {
             return "redirect:/seller/profile/edit";
         }
 
-        model.addAttribute("sellerName", session.getAttribute("username"));
+        model.addAttribute("sellerName", SessionHelper.getUsername(request, "SELLER"));
         return "seller/seller-kirim-sampah";
     }
 
@@ -199,9 +197,9 @@ public class SellerController {
 
     @PostMapping("/kirim-sampah")
     public String SellerKirimSampahSubmit(@RequestParam("imageFile") MultipartFile imageFile,
-            HttpSession session,
+            HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
-        Integer userId = requireSeller(session, redirectAttributes);
+        Integer userId = requireSeller(request, redirectAttributes);
         if (userId == null) {
             return "redirect:/auth/seller/login";
         }

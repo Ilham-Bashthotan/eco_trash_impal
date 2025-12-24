@@ -5,7 +5,8 @@ import com.tubes_impal.entity.Contact;
 import com.tubes_impal.repos.ContactRepository;
 import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.services.AdminService;
-import jakarta.servlet.http.HttpSession;
+import com.tubes_impal.utils.SessionHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,22 +35,20 @@ public class AdminController {
     /**
      * Check admin authentication
      */
-    private boolean isAdminAuthenticated(HttpSession session) {
-        Integer userId = (Integer) session.getAttribute("userId");
-        String role = (String) session.getAttribute("role");
-        return userId != null && "ADMIN".equals(role);
+    private boolean isAdminAuthenticated(HttpServletRequest request) {
+        return SessionHelper.isAuthenticated(request, "ADMIN");
     }
 
     /**
      * Admin Dashboard - Requires session authentication
      */
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String dashboard(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -79,11 +78,11 @@ public class AdminController {
     }
 
     @GetMapping("/profile")
-    public String adminProfile(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String adminProfile(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         User user = userRepository.findById(userId).orElse(null);
         Contact contact = contactRepository.findByUserId(userId).orElse(null);
         model.addAttribute("username", user != null ? user.getUsername() : "Admin");
@@ -93,34 +92,34 @@ public class AdminController {
     }
 
     @GetMapping("/profile/edit")
-    public String adminProfileEdit(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String adminProfileEdit(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
             Contact c = new Contact();
             User u = userRepository.findById(userId).orElse(null);
             c.setUser(u);
             return c;
         });
-        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("username", SessionHelper.getUsername(request, "ADMIN"));
         model.addAttribute("contact", contact);
         return "admin/admin-profile-edit";
     }
 
     @PostMapping("/profile/edit")
-    public String adminProfileEditSubmit(HttpSession session,
+    public String adminProfileEditSubmit(HttpServletRequest request,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String firstName,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String lastName,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String phoneNumber,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String email,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String address,
             RedirectAttributes redirectAttributes) {
-        if (!isAdminAuthenticated(session)) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
             Contact c = new Contact();
             User u = userRepository.findById(userId).orElse(null);
@@ -142,12 +141,12 @@ public class AdminController {
      * Courier Management Page
      */
     @GetMapping("/courier-management")
-    public String courierManagement(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String courierManagement(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -170,8 +169,9 @@ public class AdminController {
      * Hire a courier
      */
     @PostMapping("/courier/hire/{id}")
-    public String hireCourier(@PathVariable Integer id, HttpSession session, RedirectAttributes redirectAttributes) {
-        if (!isAdminAuthenticated(session)) {
+    public String hireCourier(@PathVariable Integer id, HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
@@ -189,8 +189,9 @@ public class AdminController {
      * Fire a courier
      */
     @PostMapping("/courier/fire/{id}")
-    public String fireCourier(@PathVariable Integer id, HttpSession session, RedirectAttributes redirectAttributes) {
-        if (!isAdminAuthenticated(session)) {
+    public String fireCourier(@PathVariable Integer id, HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
@@ -209,12 +210,12 @@ public class AdminController {
      * Trash Statistics Page
      */
     @GetMapping("/trash-statistics")
-    public String trashStatistics(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String trashStatistics(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -239,12 +240,12 @@ public class AdminController {
      * Courier Statistics Page
      */
     @GetMapping("/courier-statistics")
-    public String courierStatistics(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String courierStatistics(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -270,12 +271,12 @@ public class AdminController {
      * Admin Registration Page
      */
     @GetMapping("/admin-registration")
-    public String adminRegistration(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String adminRegistration(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -293,14 +294,14 @@ public class AdminController {
      */
     @PostMapping("/register-admin")
     public String registerAdmin(
-            HttpSession session,
+            HttpServletRequest request,
             @org.springframework.web.bind.annotation.RequestParam String username,
             @org.springframework.web.bind.annotation.RequestParam String email,
             @org.springframework.web.bind.annotation.RequestParam String password,
             @org.springframework.web.bind.annotation.RequestParam String phoneNumber,
             RedirectAttributes redirectAttributes) {
 
-        if (!isAdminAuthenticated(session)) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
@@ -322,12 +323,12 @@ public class AdminController {
      * Courier Registration Page
      */
     @GetMapping("/courier-registration")
-    public String courierRegistration(HttpSession session, Model model) {
-        if (!isAdminAuthenticated(session)) {
+    public String courierRegistration(HttpServletRequest request, Model model) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
-        Integer userId = (Integer) session.getAttribute("userId");
+        Integer userId = SessionHelper.getUserId(request, "ADMIN");
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/auth/admin/login";
@@ -345,7 +346,7 @@ public class AdminController {
      */
     @PostMapping("/register-courier")
     public String registerCourier(
-            HttpSession session,
+            HttpServletRequest request,
             @org.springframework.web.bind.annotation.RequestParam String username,
             @org.springframework.web.bind.annotation.RequestParam String email,
             @org.springframework.web.bind.annotation.RequestParam String password,
@@ -354,7 +355,7 @@ public class AdminController {
             @org.springframework.web.bind.annotation.RequestParam String driverLicense,
             RedirectAttributes redirectAttributes) {
 
-        if (!isAdminAuthenticated(session)) {
+        if (!isAdminAuthenticated(request)) {
             return "redirect:/auth/admin/login";
         }
 
