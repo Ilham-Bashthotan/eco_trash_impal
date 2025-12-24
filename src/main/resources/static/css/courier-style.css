@@ -1,0 +1,217 @@
+/* Courier Dashboard Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #2c3e50 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar-brand .logo-icon {
+    width: 30px;
+    height: 30px;
+    background-color: #27ae60;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #555;
+    margin: 0 10px;
+}
+
+.nav-link:hover {
+    color: #27ae60;
+}
+
+.btn-sign-out {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+}
+
+.btn-sign-out:hover {
+    background-color: #229954;
+    color: white;
+}
+
+.dropdown-toggle::after {
+    margin-left: 8px;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* Statistics Cards */
+.stats-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s;
+}
+
+.stats-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card-title {
+    font-size: 0.95rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.stats-card-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Table Styles */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px;
+    font-size: 0.9rem;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Styles */
+.btn-sm {
+    padding: 6px 18px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.btn-refresh {
+    background-color: #d4af37;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 5px;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+.btn-refresh:hover {
+    background-color: #c9a02c;
+    color: white;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: 4px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+}
+
+.form-control:focus {
+    border-color: #5cb85c;
+    box-shadow: 0 0 0 0.15rem rgba(92, 184, 92, 0.25);
+}
+
+.form-control::placeholder {
+    color: #ccc;
+    font-size: 0.85rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.1rem;
+}
+
+.password-toggle:hover {
+    color: #666 !important;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}

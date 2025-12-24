@@ -111,7 +111,7 @@
                 </ul>
 
                 <div class="d-flex align-items-center">
-                    <span class="text-muted me-3" th:text="${username}">Admin</span>
+                    <a class="nav-link" th:text="${username}" href="/admin/profile">Admin</a>
                     <form method="post" th:action="@{/auth/admin/logout}" style="margin: 0;">
                         <button type="submit" class="btn btn-sign-in">Keluar</button>
                     </form>

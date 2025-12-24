@@ -1,6 +1,8 @@
 package com.tubes_impal.controller;
 
 import com.tubes_impal.entity.User;
+import com.tubes_impal.entity.Contact;
+import com.tubes_impal.repos.ContactRepository;
 import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.services.AdminService;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +27,9 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
 
     /**
      * Check admin authentication
@@ -71,6 +76,66 @@ public class AdminController {
     @GetMapping("/")
     public String adminRootRedirect() {
         return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/profile")
+    public String adminProfile(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+        Integer userId = (Integer) session.getAttribute("userId");
+        User user = userRepository.findById(userId).orElse(null);
+        Contact contact = contactRepository.findByUserId(userId).orElse(null);
+        model.addAttribute("username", user != null ? user.getUsername() : "Admin");
+        model.addAttribute("name", user != null ? user.getName() : "Admin");
+        model.addAttribute("contact", contact);
+        return "admin/admin-profile";
+    }
+
+    @GetMapping("/profile/edit")
+    public String adminProfileEdit(HttpSession session, Model model) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+        Integer userId = (Integer) session.getAttribute("userId");
+        Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
+            Contact c = new Contact();
+            User u = userRepository.findById(userId).orElse(null);
+            c.setUser(u);
+            return c;
+        });
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("contact", contact);
+        return "admin/admin-profile-edit";
+    }
+
+    @PostMapping("/profile/edit")
+    public String adminProfileEditSubmit(HttpSession session,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String firstName,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String lastName,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String phoneNumber,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String email,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String address,
+            RedirectAttributes redirectAttributes) {
+        if (!isAdminAuthenticated(session)) {
+            return "redirect:/auth/admin/login";
+        }
+        Integer userId = (Integer) session.getAttribute("userId");
+        Contact contact = contactRepository.findByUserId(userId).orElseGet(() -> {
+            Contact c = new Contact();
+            User u = userRepository.findById(userId).orElse(null);
+            c.setUser(u);
+            return c;
+        });
+
+        contact.setFirstName(firstName);
+        contact.setLastName(lastName);
+        contact.setPhoneNumber(phoneNumber);
+        contact.setEmail(email);
+        contact.setAddress(address);
+        contactRepository.save(contact);
+        redirectAttributes.addFlashAttribute("success", "Profil berhasil diperbarui");
+        return "redirect:/admin/profile";
     }
 
     /**
