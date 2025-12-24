@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="header">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle != null ? pageTitle : 'ECOTrash'}">ECOTrash</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.5/css/bootstrap.min.css}">
+
+    <!-- Custom CSS (match courier header style) -->
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #f3f5f6;
+            border-bottom: 1px solid #283238;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: #283238 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .navbar-brand .logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #283238;
+            font-size: 14px;
+        }
+
+        .nav-link {
+            color: #283238;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            color: #6f2fa6;
+            text-decoration: none;
+        }
+
+        .btn-logout {
+            background-color: #d4a017;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .btn-logout:hover {
+            background-color: #c29014;
+        }
+
+        .container { max-width: 1200px; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <span class="logo">🍃</span>
+                ECOTrash
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/seller/}">Dashboard Seller</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/seller/orders}">Riwayat Orders Seller</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/seller/kirim-sampah}">Kirim Sampah</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-3" th:text="${sellerName}">Seller</span>
+                    <form method="post" th:action="@{/auth/seller/logout}" style="margin: 0;">
+                        <button type="submit" class="btn btn-logout">Keluar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+</body>
+
+</html>
