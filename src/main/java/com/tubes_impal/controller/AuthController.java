@@ -132,7 +132,7 @@ public class AuthController {
         return "redirect:/auth/courier/login";
     }
 
-// =================== SELLER ===================
+    // =================== SELLER ===================
 
     @GetMapping("/seller/login")
     public String showSellerLoginPage(HttpSession session) {
@@ -144,9 +144,9 @@ public class AuthController {
 
     @PostMapping("/seller/login")
     public String sellerLogin(@RequestParam String username,
-                              @RequestParam String password,
-                              HttpSession session,
-                              RedirectAttributes redirectAttributes) {
+            @RequestParam String password,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         if (username == null || username.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
@@ -175,7 +175,7 @@ public class AuthController {
         return "redirect:/seller/dashboard";
     }
 
-        // ====================== SELLER SIGN IN======================
+    // ====================== SELLER SIGN IN======================
 
     @GetMapping("/seller/signin")
     public String showSellerSignInPage(HttpSession session) {
@@ -212,7 +212,7 @@ public class AuthController {
         }
 
         try {
-            User newUser = authService.registerSeller(username, email, password);
+            authService.registerSeller(username, email, password);
             redirectAttributes.addFlashAttribute("success", "Registrasi berhasil! Silakan login");
             return "redirect:/auth/seller/login";
         } catch (Exception e) {
