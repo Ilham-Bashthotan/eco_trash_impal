@@ -184,8 +184,8 @@ public class SellerController {
         // Cek kelengkapan profil sebelum menampilkan form
         Contact contact = contactRepository.findByUserId(userId).orElse(null);
         if (contact == null || isBlank(contact.getEmail()) || isBlank(contact.getAddress())) {
-            redirectAttributes.addFlashAttribute("error", 
-                "Profil belum lengkap. Harap lengkapi email dan alamat terlebih dahulu sebelum mengirim sampah.");
+            redirectAttributes.addFlashAttribute("error",
+                    "Profil belum lengkap. Harap lengkapi email dan alamat terlebih dahulu sebelum mengirim sampah.");
             return "redirect:/seller/profile/edit";
         }
 
@@ -208,9 +208,10 @@ public class SellerController {
 
         try {
             sellerService.submitTrash(userId, imageFile);
-            redirectAttributes.addFlashAttribute("success", 
-                "Gambar berhasil dikirim dan order dibuat!" +
-                (imageFile.getOriginalFilename() != null ? " File: " + imageFile.getOriginalFilename() : ""));
+            redirectAttributes.addFlashAttribute("success",
+                    "Gambar berhasil dikirim dan order dibuat!" +
+                            (imageFile.getOriginalFilename() != null ? " File: " + imageFile.getOriginalFilename()
+                                    : ""));
             return "redirect:/seller/orders";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
