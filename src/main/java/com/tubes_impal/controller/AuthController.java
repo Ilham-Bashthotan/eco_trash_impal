@@ -67,7 +67,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "ADMIN");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/admin/login";
+        return "redirect:/";
     }
 
     @GetMapping("/admin/logout")
@@ -75,7 +75,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "ADMIN");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/admin/login";
+        return "redirect:/";
     }
 
     // ====================== COURIER ======================
@@ -127,7 +127,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "COURIER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/courier/login";
+        return "redirect:/";
     }
 
     @GetMapping("/courier/logout")
@@ -135,7 +135,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "COURIER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/courier/login";
+        return "redirect:/";
     }
 
     // =================== SELLER ===================
@@ -233,7 +233,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "SELLER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/seller/login";
+        return "redirect:/";
     }
 
     @GetMapping("/seller/logout")
@@ -241,7 +241,7 @@ public class AuthController {
             RedirectAttributes redirectAttributes) {
         MultiSessionManager.invalidateSession(request, response, "SELLER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
-        return "redirect:/auth/seller/login";
+        return "redirect:/";
     }
 
 }

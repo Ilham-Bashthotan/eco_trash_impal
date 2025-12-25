@@ -141,7 +141,6 @@ public class SellerController {
     public String SellerProfileEditSubmit(@RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String phoneNumber,
-            @RequestParam(required = false) String email,
             @RequestParam(required = false) String address,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,
@@ -162,7 +161,6 @@ public class SellerController {
         contact.setFirstName(firstName);
         contact.setLastName(lastName);
         contact.setPhoneNumber(phoneNumber);
-        contact.setEmail(email);
         contact.setAddress(address);
         contact.setLatitude(latitude);
         contact.setLongitude(longitude);
