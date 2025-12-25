@@ -14,6 +14,12 @@
 
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+
+    <style>
+        input.is-invalid {
+            background-image: none !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -67,7 +73,7 @@
                             <input type="password" class="form-control" id="password" name="password"
                                 placeholder="Minimal 8 karakter" required style="padding-right: 40px;" minlength="8">
                             <button type="button" class="password-toggle" id="togglePassword"
-                                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #999; cursor: pointer; padding: 0; font-size: 1.1rem;">
+                                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #999; cursor: pointer; padding: 0; font-size: 1.1rem; z-index: 10;">
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
                         </div>
@@ -82,7 +88,7 @@
                             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
                                 placeholder="Ulangi password" required style="padding-right: 40px;" minlength="8">
                             <button type="button" class="password-toggle" id="toggleConfirmPassword"
-                                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #999; cursor: pointer; padding: 0; font-size: 1.1rem;">
+                                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: #999; cursor: pointer; padding: 0; font-size: 1.1rem; z-index: 10;">
                                 <i class="bi bi-eye" id="eyeIconConfirm"></i>
                             </button>
                         </div>
@@ -94,7 +100,7 @@
                         <label for="phoneNumber" class="form-label" style="font-weight: 500; color: #333;">Nomor
                             Telepon</label>
                         <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
-                            placeholder="08xxxxxxxxxx" required pattern="[0-9]{10,13}">
+                            placeholder="08xxxxxxxxxx" required pattern="[0-9]{10,13}" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         <div class="invalid-feedback">Nomor telepon harus 10-13 digit angka</div>
                     </div>
 
@@ -102,7 +108,7 @@
                     <div class="mb-3">
                         <label for="nik" class="form-label" style="font-weight: 500; color: #333;">Nomor NIK</label>
                         <input type="text" class="form-control" id="nik" name="nik" placeholder="16 digit NIK" required
-                            pattern="[0-9]{16}" maxlength="16">
+                            pattern="[0-9]{16}" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         <div class="invalid-feedback">NIK harus 16 digit angka</div>
                     </div>
 
@@ -111,8 +117,8 @@
                         <label for="driverLicense" class="form-label" style="font-weight: 500; color: #333;">Surat Izin
                             Mengemudi (SIM)</label>
                         <input type="text" class="form-control" id="driverLicense" name="driverLicense"
-                            placeholder="Nomor SIM" required>
-                        <div class="invalid-feedback">Nomor SIM harus diisi</div>
+                            placeholder="Nomor SIM" required pattern="[0-9]{12}" maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <div class="invalid-feedback">Nomor SIM harus 12 digit angka</div>
                     </div>
 
                     <!-- Buttons -->
@@ -162,6 +168,14 @@
 
         // Validate password match on submit
         form.addEventListener('submit', (e) => {
+            if (passwordInput.value.length < 8) {
+                e.preventDefault();
+                passwordInput.setCustomValidity('Password minimal 8 karakter');
+                passwordInput.classList.add('is-invalid');
+            } else {
+                passwordInput.setCustomValidity('');
+                passwordInput.classList.remove('is-invalid');
+            }
             if (passwordInput.value !== confirmPasswordInput.value) {
                 e.preventDefault();
                 confirmPasswordInput.setCustomValidity('Password tidak cocok');
@@ -169,6 +183,17 @@
             } else {
                 confirmPasswordInput.setCustomValidity('');
                 confirmPasswordInput.classList.remove('is-invalid');
+            }
+        });
+
+        // Real-time password validation
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value.length < 8) {
+                passwordInput.setCustomValidity('Password minimal 8 karakter');
+                passwordInput.classList.add('is-invalid');
+            } else {
+                passwordInput.setCustomValidity('');
+                passwordInput.classList.remove('is-invalid');
             }
         });
 
