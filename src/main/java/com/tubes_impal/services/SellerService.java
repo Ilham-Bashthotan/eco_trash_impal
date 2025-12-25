@@ -187,7 +187,7 @@ public class SellerService {
 
             // Check today's visits against cap
             int todayVisits = courierDailyStatsRepository
-                    .findByCourierIdAndDate(c.getId(), today)
+                    .findFirstByCourierIdAndDateOrderByIdDesc(c.getId(), today)
                     .map(CourierDailyStats::getVisits)
                     .orElse(0);
             if (todayVisits >= maxPerDay) {
@@ -217,7 +217,7 @@ public class SellerService {
 
         // Increment today's visits for the courier
         CourierDailyStats stats = courierDailyStatsRepository
-                .findByCourierIdAndDate(best.getId(), today)
+                .findFirstByCourierIdAndDateOrderByIdDesc(best.getId(), today)
                 .orElse(null);
         if (stats == null) {
             stats = new CourierDailyStats();

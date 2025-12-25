@@ -175,9 +175,9 @@ public class AdminController {
 
         boolean success = adminService.hireCourier(id);
         if (success) {
-            redirectAttributes.addFlashAttribute("success", "Kurir berhasil di-hire!");
+            redirectAttributes.addFlashAttribute("success", "Kurir berhasil diaktifkan!");
         } else {
-            redirectAttributes.addFlashAttribute("error", "Gagal hire kurir. Kurir tidak ditemukan atau sudah aktif.");
+            redirectAttributes.addFlashAttribute("error", "Gagal aktifkan kurir. Kurir tidak ditemukan atau sudah aktif.");
         }
 
         return "redirect:/admin/courier-management";
@@ -195,10 +195,10 @@ public class AdminController {
 
         boolean success = adminService.fireCourier(id);
         if (success) {
-            redirectAttributes.addFlashAttribute("success", "Kurir berhasil di-fire!");
+            redirectAttributes.addFlashAttribute("success", "Kurir berhasil dinonaktifkan!");
         } else {
             redirectAttributes.addFlashAttribute("error",
-                    "Gagal fire kurir. Kurir tidak ditemukan atau sudah tidak aktif.");
+                    "Gagal nonaktifkan kurir. Kurir tidak ditemukan atau sudah tidak aktif.");
         }
 
         return "redirect:/admin/courier-management";
