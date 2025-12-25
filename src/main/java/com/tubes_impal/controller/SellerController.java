@@ -205,11 +205,17 @@ public class SellerController {
         }
 
         try {
-            sellerService.submitTrash(userId, imageFile);
-            redirectAttributes.addFlashAttribute("success",
-                    "Gambar berhasil dikirim dan order dibuat!" +
-                            (imageFile.getOriginalFilename() != null ? " File: " + imageFile.getOriginalFilename()
-                                    : ""));
+            var order = sellerService.submitTrash(userId, imageFile);
+            if (order.getStatus() == com.tubes_impal.entity.StatusOrder.CANCELED) {
+                redirectAttributes.addFlashAttribute("error",
+                        "Order dibatalkan otomatis: " + (order.getReasonDetail() != null ? order.getReasonDetail()
+                                : "Tidak ada kurir tersedia"));
+            } else {
+                redirectAttributes.addFlashAttribute("success",
+                        "Gambar berhasil dikirim dan order dibuat!" +
+                                (imageFile.getOriginalFilename() != null ? " File: " + imageFile.getOriginalFilename()
+                                        : ""));
+            }
             return "redirect:/seller/orders";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());

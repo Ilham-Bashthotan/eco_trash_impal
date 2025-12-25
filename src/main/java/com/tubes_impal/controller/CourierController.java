@@ -14,8 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.tubes_impal.entity.StatusOrder;
+import com.tubes_impal.entity.TrashOrder;
+import com.tubes_impal.entity.Courier;
+import com.tubes_impal.repos.TrashOrderRepository;
+import com.tubes_impal.repos.CourierRepository;
 import java.util.*;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/courier")
@@ -29,6 +36,12 @@ public class CourierController {
 
     @Autowired
     private ContactRepository contactRepository;
+
+    @Autowired
+    private TrashOrderRepository trashOrderRepository;
+
+    @Autowired
+    private CourierRepository courierRepository;
 
     private boolean isCourierAuthenticated(HttpServletRequest request) {
         return SessionHelper.isAuthenticated(request, "COURIER");
@@ -47,7 +60,9 @@ public class CourierController {
         Integer userId = SessionHelper.getUserId(request, "COURIER");
         User user = userRepository.findById(userId).orElse(null);
         Contact contact = contactRepository.findByUserId(userId).orElse(null);
+        Courier courier = courierRepository.findByUserId(userId).orElse(null);
         model.addAttribute("courierName", user != null ? user.getName() : "Courier");
+        model.addAttribute("courierStatus", courier != null ? courier.getStatus() : null);
         model.addAttribute("contact", contact);
         return "courier/courier-profile";
     }
@@ -64,7 +79,9 @@ public class CourierController {
             c.setUser(u);
             return c;
         });
+        Courier courier = courierRepository.findByUserId(userId).orElse(null);
         model.addAttribute("courierName", SessionHelper.getUsername(request, "COURIER"));
+        model.addAttribute("courierStatus", courier != null ? courier.getStatus() : null);
         model.addAttribute("contact", contact);
         return "courier/courier-profile-edit";
     }
@@ -108,6 +125,10 @@ public class CourierController {
         try {
             Map<String, Object> dashboardData = courierService.getDashboardData(userId);
             model.addAllAttributes(dashboardData);
+            User user = userRepository.findById(userId).orElse(null);
+            Courier courier = courierRepository.findByUserId(userId).orElse(null);
+            model.addAttribute("courierName", user != null ? user.getName() : "Courier");
+            model.addAttribute("courierStatus", courier != null ? courier.getStatus() : null);
         } catch (Exception e) {
             model.addAttribute("errorLoading", true);
             model.addAttribute("errorMessage", e.getMessage());
@@ -125,7 +146,10 @@ public class CourierController {
 
         try {
             List<Map<String, Object>> orders = courierService.getOrders(userId);
-            model.addAttribute("courierName", ((User) model.asMap().get("courierName")));
+            User user = userRepository.findById(userId).orElse(null);
+            Courier courier = courierRepository.findByUserId(userId).orElse(null);
+            model.addAttribute("courierName", user != null ? user.getName() : "Courier");
+            model.addAttribute("courierStatus", courier != null ? courier.getStatus() : null);
             model.addAttribute("orders", orders);
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
@@ -143,11 +167,144 @@ public class CourierController {
 
         try {
             Map<String, Object> order = courierService.getOrderDetail(userId, id);
+            User user = userRepository.findById(userId).orElse(null);
+            Courier courier = courierRepository.findByUserId(userId).orElse(null);
+            model.addAttribute("courierName", user != null ? user.getName() : "Courier");
+            model.addAttribute("courierStatus", courier != null ? courier.getStatus() : null);
             model.addAttribute("order", order);
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
         }
 
         return "courier/courier-order-detail";
+    }
+
+    @PostMapping("/orders/{id}/pickup")
+    public String pickupOrder(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+        if (!isCourierAuthenticated(request)) {
+            return "redirect:/auth/courier/login";
+        }
+
+        Integer userId = SessionHelper.getUserId(request, "COURIER");
+
+        try {
+            Optional<TrashOrder> orderOpt = trashOrderRepository.findById(id.intValue());
+            if (orderOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak ditemukan");
+                return "redirect:/courier/orders";
+            }
+
+            TrashOrder order = orderOpt.get();
+            if (order.getCourier() == null || !order.getCourier().getUser().getId().equals(userId)) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak dimiliki courier ini");
+                return "redirect:/courier/orders";
+            }
+
+            if (order.getStatus() != StatusOrder.PENDING) {
+                redirectAttributes.addFlashAttribute("error", "Status order tidak valid untuk diambil");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            order.setStatus(StatusOrder.PICKED_UP);
+            trashOrderRepository.save(order);
+            redirectAttributes.addFlashAttribute("success", "Pesanan berhasil diambil. Silakan isi berat sampah.");
+            return "redirect:/courier/orders/" + id;
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/courier/orders";
+        }
+    }
+
+    @PostMapping("/orders/{id}/deliver")
+    public String deliverOrder(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            @RequestParam(required = false) Double weight,
+            RedirectAttributes redirectAttributes) {
+        if (!isCourierAuthenticated(request)) {
+            return "redirect:/auth/courier/login";
+        }
+
+        Integer userId = SessionHelper.getUserId(request, "COURIER");
+
+        try {
+            if (weight == null || weight <= 0) {
+                redirectAttributes.addFlashAttribute("error", "Berat sampah harus diisi (lebih dari 0)");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            Optional<TrashOrder> orderOpt = trashOrderRepository.findById(id.intValue());
+            if (orderOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak ditemukan");
+                return "redirect:/courier/orders";
+            }
+
+            TrashOrder order = orderOpt.get();
+            if (order.getCourier() == null || !order.getCourier().getUser().getId().equals(userId)) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak dimiliki courier ini");
+                return "redirect:/courier/orders";
+            }
+
+            if (order.getStatus() != StatusOrder.PICKED_UP) {
+                redirectAttributes.addFlashAttribute("error", "Status order harus PICKED_UP untuk dikirim");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            if (order.getTrash() != null) {
+                order.getTrash().setTrashWeight(weight);
+            }
+            order.setStatus(StatusOrder.DELIVERED);
+            trashOrderRepository.save(order);
+            redirectAttributes.addFlashAttribute("success", "Pesanan berhasil dikirim. Berat: " + weight + "kg");
+            return "redirect:/courier/orders/" + id;
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/courier/orders/" + id;
+        }
+    }
+
+    @PostMapping("/orders/{id}/complete")
+    public String completeOrder(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+        if (!isCourierAuthenticated(request)) {
+            return "redirect:/auth/courier/login";
+        }
+
+        Integer userId = SessionHelper.getUserId(request, "COURIER");
+
+        try {
+            Optional<TrashOrder> orderOpt = trashOrderRepository.findById(id.intValue());
+            if (orderOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak ditemukan");
+                return "redirect:/courier/orders";
+            }
+
+            TrashOrder order = orderOpt.get();
+            if (order.getCourier() == null || !order.getCourier().getUser().getId().equals(userId)) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak dimiliki courier ini");
+                return "redirect:/courier/orders";
+            }
+
+            if (order.getStatus() != StatusOrder.DELIVERED) {
+                redirectAttributes.addFlashAttribute("error", "Status order harus DELIVERED untuk diselesaikan");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            order.setStatus(StatusOrder.COMPLETED);
+            trashOrderRepository.save(order);
+            redirectAttributes.addFlashAttribute("success", "Pesanan berhasil diselesaikan");
+            return "redirect:/courier/orders";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/courier/orders/" + id;
+        }
     }
 }

@@ -4,11 +4,16 @@ import com.tubes_impal.entity.Seller;
 import com.tubes_impal.entity.StatusOrder;
 import com.tubes_impal.entity.Trash;
 import com.tubes_impal.entity.TrashOrder;
+import com.tubes_impal.entity.Courier;
+import com.tubes_impal.entity.StatusCourier;
+import com.tubes_impal.entity.CourierDailyStats;
 import com.tubes_impal.repos.SellerRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
 import com.tubes_impal.repos.TrashRepository;
 import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.repos.ContactRepository;
+import com.tubes_impal.repos.CourierRepository;
+import com.tubes_impal.repos.CourierDailyStatsRepository;
 import com.tubes_impal.entity.Contact;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,17 +43,23 @@ public class SellerService {
     private final TrashRepository trashRepository;
     private final UserRepository userRepository;
     private final ContactRepository contactRepository;
+    private final CourierRepository courierRepository;
+    private final CourierDailyStatsRepository courierDailyStatsRepository;
 
     public SellerService(SellerRepository sellerRepository,
             TrashOrderRepository trashOrderRepository,
             TrashRepository trashRepository,
             UserRepository userRepository,
-            ContactRepository contactRepository) {
+            ContactRepository contactRepository,
+            CourierRepository courierRepository,
+            CourierDailyStatsRepository courierDailyStatsRepository) {
         this.sellerRepository = sellerRepository;
         this.trashOrderRepository = trashOrderRepository;
         this.trashRepository = trashRepository;
         this.userRepository = userRepository;
         this.contactRepository = contactRepository;
+        this.courierRepository = courierRepository;
+        this.courierDailyStatsRepository = courierDailyStatsRepository;
     }
 
     public Seller getSellerByUserId(Integer userId) {
@@ -111,7 +123,7 @@ public class SellerService {
     }
 
     @Transactional
-    public void submitTrash(Integer userId, MultipartFile imageFile) throws IOException {
+    public TrashOrder submitTrash(Integer userId, MultipartFile imageFile) throws IOException {
         if (imageFile == null || imageFile.isEmpty()) {
             throw new IllegalArgumentException("File tidak dipilih. Silakan pilih gambar terlebih dahulu.");
         }
@@ -146,6 +158,81 @@ public class SellerService {
         order.setSeller(seller);
         order.setTime(LocalDateTime.now());
         order.setStatus(StatusOrder.PENDING);
+        trashOrderRepository.save(order);
+
+        // Try to auto-assign a courier respecting availability and daily cap
+        autoAssignCourier(order);
+
+        return order;
+    }
+
+    private void autoAssignCourier(TrashOrder order) {
+        // Get all AVAILABLE couriers
+        List<Courier> availableCouriers = courierRepository.findByStatus(StatusCourier.AVAILABLE);
+
+        if (availableCouriers == null || availableCouriers.isEmpty()) {
+            // Cancel order if no couriers at all
+            cancelNoCourier(order, "Tidak ada kurir dengan status AVAILABLE.");
+            return;
+        }
+
+        LocalDate today = LocalDate.now();
+
+        // Filter by daily capacity and compute active load
+        Courier best = null;
+        int bestLoad = Integer.MAX_VALUE;
+
+        for (Courier c : availableCouriers) {
+            int maxPerDay = c.getMaxVisitsADay() != null ? c.getMaxVisitsADay() : Integer.MAX_VALUE;
+
+            // Check today's visits against cap
+            int todayVisits = courierDailyStatsRepository
+                    .findByCourierIdAndDate(c.getId(), today)
+                    .map(CourierDailyStats::getVisits)
+                    .orElse(0);
+            if (todayVisits >= maxPerDay) {
+                continue; // can't take more orders today
+            }
+
+            // Current active orders (not COMPLETED or CANCELED)
+            int activeOrders = (int) trashOrderRepository.findByCourierId(c.getId()).stream()
+                    .filter(o -> o.getStatus() != StatusOrder.COMPLETED && o.getStatus() != StatusOrder.CANCELED)
+                    .count();
+
+            if (activeOrders < bestLoad) {
+                bestLoad = activeOrders;
+                best = c;
+            }
+        }
+
+        if (best == null) {
+            cancelNoCourier(order, "Tidak ada kurir tersedia (batas harian tercapai semua).");
+            return;
+        }
+
+        // Assign order to the best courier (status stays PENDING until courier picks it
+        // up)
+        order.setCourier(best);
+        trashOrderRepository.save(order);
+
+        // Increment today's visits for the courier
+        CourierDailyStats stats = courierDailyStatsRepository
+                .findByCourierIdAndDate(best.getId(), today)
+                .orElse(null);
+        if (stats == null) {
+            stats = new CourierDailyStats();
+            stats.setCourier(best);
+            stats.setDate(today);
+            stats.setVisits(0);
+        }
+        stats.setVisits(stats.getVisits() + 1);
+        courierDailyStatsRepository.save(stats);
+    }
+
+    private void cancelNoCourier(TrashOrder order, String reasonDetail) {
+        order.setStatus(StatusOrder.CANCELED);
+        order.setReason("NO_COURIER_AVAILABLE");
+        order.setReasonDetail(reasonDetail);
         trashOrderRepository.save(order);
     }
 
