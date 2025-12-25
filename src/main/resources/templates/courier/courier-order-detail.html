@@ -13,6 +13,18 @@
 
     <div class="container">
         <div class="order-detail-container">
+            <!-- Error Alert -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Pemberitahuan:</strong> <span th:text="${error}">Error message</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Success Alert -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Berhasil:</strong> <span th:text="${success}">Success message</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
             <!-- Header -->
             <div class="order-header">
                 <div class="order-header-title">
@@ -71,20 +83,18 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="info-row">
-                        <div class="info-label">Berat Sampah (kg)</div>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="number" class="form-control" id="trashWeight" th:value="${order.weight}"
-                                placeholder="Masukkan berat sampah" step="0.1" min="0"
-                                th:disabled="${order.status.toString() != 'PICKED_UP'}"
-                                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                            <span style="color: #999; font-size: 14px;">kg</span>
+                        <div class="info-row">
+                            <div class="info-label">Berat Sampah (kg)</div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" class="form-control" id="trashWeight" th:value="${order.weight}"
+                                    placeholder="Masukkan berat sampah" step="0.1" min="0.1" max="100"
+                                    style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                                <span style="color: #999; font-size: 14px;">kg</span>
+                            </div>
+                            <small style="color: #666; margin-top: 5px; display: block;">
+                                Minimal: 0.1 kg, Maksimal: 100 kg
+                            </small>
                         </div>
-                        <small th:if="${order.status.toString() != 'PICKED_UP'}"
-                            style="color: #ccc; margin-top: 5px; display: block;">
-                            (Hanya bisa diisi saat status PICKED_UP)
-                        </small>
-                    </div>
                 </div>
             </div>
 
@@ -112,6 +122,11 @@
                 </label>
                 <textarea id="cancellationDetail" class="reason-textarea"
                     placeholder="Masukkan keterangan tambahan..."></textarea>
+
+                <div style="margin-top: 15px;">
+                    <button type="button" class="btn btn-danger" onclick="submitRejectForm()">Tolak Pesanan</button>
+                    <button type="button" class="btn btn-secondary" onclick="showRejectForm()">Batal</button>
+                </div>
             </div>
             <!-- Action Buttons -->
             <div class="action-buttons">
@@ -119,6 +134,14 @@
                 <form th:if="${order.status.toString() == 'PENDING'}" method="post"
                     th:action="@{/courier/orders/{id}/pickup(id=${order.id})}" style="display: inline;">
                     <button type="submit" class="btn btn-action btn-primary-action">Setujui &amp; Ambil Pesanan</button>
+                </form>
+
+                <!-- PENDING: Reject Form -->
+                <form th:if="${order.status.toString() == 'PENDING'}" method="post"
+                    th:action="@{/courier/orders/{id}/reject(id=${order.id})}" style="display: inline;" id="rejectForm">
+                    <input type="hidden" name="reason" id="reasonField" />
+                    <input type="hidden" name="detail" id="detailField" />
+                    <button type="button" class="btn btn-action btn-danger" onclick="showRejectForm()">Tolak Pesanan</button>
                 </form>
 
                 <!-- PICKED_UP: Deliver Form with Weight -->
@@ -148,25 +171,37 @@
                     }
                     document.getElementById('deliverForm').submit();
                 }
+
+                function showRejectForm() {
+                    const cancelReasonSection = document.getElementById('cancelReasonSection');
+                    if (cancelReasonSection.style.display === 'none') {
+                        cancelReasonSection.style.display = 'block';
+                        cancelReasonSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        cancelReasonSection.style.display = 'none';
+                    }
+                }
+
+                function submitRejectForm() {
+                    const reasonSelect = document.getElementById('cancellationReason');
+                    const detailTextarea = document.getElementById('cancellationDetail');
+                    const reasonField = document.getElementById('reasonField');
+                    const detailField = document.getElementById('detailField');
+
+                    if (!reasonSelect || !reasonSelect.value) {
+                        alert('Silakan pilih alasan penolakan.');
+                        return;
+                    }
+
+                    if (reasonSelect && reasonSelect.value) {
+                        reasonField.value = reasonSelect.value;
+                    }
+                    if (detailTextarea && detailTextarea.value) {
+                        detailField.value = detailTextarea.value;
+                    }
+                    document.getElementById('rejectForm').submit();
+                }
             </script>
-
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/courier.js"></script>
-
-    <script>
-        function toggleCancelReason() {
-            const cancelReasonSection = document.getElementById('cancelReasonSection');
-            if (cancelReasonSection.style.display === 'none') {
-                cancelReasonSection.style.display = 'block';
-                cancelReasonSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            } else {
-                cancelReasonSection.style.display = 'none';
-            }
-        }
-    </script>
 </body>
 
 </html>
