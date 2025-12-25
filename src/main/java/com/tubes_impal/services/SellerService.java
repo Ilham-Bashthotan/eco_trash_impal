@@ -244,10 +244,19 @@ public class SellerService {
         view.put("weight", order.getTrash() != null && order.getTrash().getTrashWeight() != null
                 ? order.getTrash().getTrashWeight()
                 : 0);
+        view.put("address", order.getTrash() != null && order.getTrash().getAddress() != null
+                ? order.getTrash().getAddress()
+                : "-");
         view.put("courierName", order.getCourier() != null && order.getCourier().getUser() != null
                 ? order.getCourier().getUser().getName()
                 : "Belum ditugaskan");
-        view.put("amount", 0);
+        double w = (order.getTrash() != null && order.getTrash().getTrashWeight() != null)
+                ? order.getTrash().getTrashWeight()
+                : 0.0;
+        int amount = (order.getStatus() == StatusOrder.COMPLETED && w > 0)
+                ? (int) Math.round(w * 1000)
+                : 0;
+        view.put("amount", amount);
         view.put("description", order.getReasonDetail() != null ? order.getReasonDetail() : "-");
         view.put("status", order.getStatus() != null ? order.getStatus().name() : StatusOrder.PENDING.name());
         return view;

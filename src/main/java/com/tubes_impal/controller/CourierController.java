@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.tubes_impal.entity.StatusOrder;
 import com.tubes_impal.entity.TrashOrder;
 import com.tubes_impal.entity.Courier;
+import com.tubes_impal.entity.Seller;
+import com.tubes_impal.repos.SellerRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
 import com.tubes_impal.repos.CourierRepository;
 import java.util.*;
@@ -42,6 +44,9 @@ public class CourierController {
 
     @Autowired
     private CourierRepository courierRepository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
 
     private boolean isCourierAuthenticated(HttpServletRequest request) {
         return SessionHelper.isAuthenticated(request, "COURIER");
@@ -298,6 +303,23 @@ public class CourierController {
             }
 
             order.setStatus(StatusOrder.COMPLETED);
+
+            // Update seller balance based on weight * 1000
+            try {
+                Seller seller = order.getSeller();
+                if (seller != null && order.getTrash() != null) {
+                    Double wObj = order.getTrash().getTrashWeight();
+                    double w = (wObj != null && wObj > 0) ? wObj : 0.0;
+                    if (w > 0) {
+                        double increment = w * 1000.0;
+                        Double current = seller.getBalance() != null ? seller.getBalance() : 0.0;
+                        seller.setBalance(current + increment);
+                        sellerRepository.save(seller);
+                    }
+                }
+            } catch (Exception ignore) {
+            }
+
             trashOrderRepository.save(order);
             redirectAttributes.addFlashAttribute("success", "Pesanan berhasil diselesaikan");
             return "redirect:/courier/orders";
