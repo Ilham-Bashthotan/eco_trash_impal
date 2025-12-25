@@ -186,9 +186,6 @@ public class AuthController {
 
     @GetMapping("/seller/signin")
     public String showSellerSignInPage(HttpServletRequest request) {
-        if (MultiSessionManager.isAuthenticated(request, "SELLER")) {
-            return "redirect:/seller/dashboard";
-        }
         return "auth/seller-signin";
     }
 

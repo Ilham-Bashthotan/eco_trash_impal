@@ -41,14 +41,26 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
-                    required>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                        required>
+                    <button type="button" class="btn btn-outline-secondary" id="togglePassword"
+                        aria-label="Tampilkan/Sembunyikan password">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="mb-3">
                 <label for="confirmPassword" class="form-label">Konfirmasi Password</label>
-                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                    placeholder="Konfirmasi Password" required>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                        placeholder="Konfirmasi Password" required>
+                    <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword"
+                        aria-label="Tampilkan/Sembunyikan konfirmasi password">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-login">
@@ -63,6 +75,30 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggles = [
+                { btnId: 'togglePassword', inputId: 'password' },
+                { btnId: 'toggleConfirmPassword', inputId: 'confirmPassword' }
+            ];
+
+            toggles.forEach(({ btnId, inputId }) => {
+                const btn = document.getElementById(btnId);
+                const input = document.getElementById(inputId);
+                if (!btn || !input) return;
+
+                btn.addEventListener('click', function () {
+                    const icon = this.querySelector('i');
+                    const isHidden = input.type === 'password';
+                    input.type = isHidden ? 'text' : 'password';
+                    if (icon) {
+                        icon.classList.remove('bi-eye', 'bi-eye-slash');
+                        icon.classList.add(isHidden ? 'bi-eye-slash' : 'bi-eye');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
