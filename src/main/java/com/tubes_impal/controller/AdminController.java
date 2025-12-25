@@ -113,7 +113,6 @@ public class AdminController {
             @org.springframework.web.bind.annotation.RequestParam(required = false) String firstName,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String lastName,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String phoneNumber,
-            @org.springframework.web.bind.annotation.RequestParam(required = false) String email,
             @org.springframework.web.bind.annotation.RequestParam(required = false) String address,
             RedirectAttributes redirectAttributes) {
         if (!isAdminAuthenticated(request)) {
@@ -130,7 +129,6 @@ public class AdminController {
         contact.setFirstName(firstName);
         contact.setLastName(lastName);
         contact.setPhoneNumber(phoneNumber);
-        contact.setEmail(email);
         contact.setAddress(address);
         contactRepository.save(contact);
         redirectAttributes.addFlashAttribute("success", "Profil berhasil diperbarui");

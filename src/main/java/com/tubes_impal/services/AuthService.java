@@ -1,7 +1,9 @@
 package com.tubes_impal.services;
 
+import com.tubes_impal.entity.Contact;
 import com.tubes_impal.entity.User;
 import com.tubes_impal.entity.Seller;
+import com.tubes_impal.repos.ContactRepository;
 import com.tubes_impal.repos.UserRepository;
 import com.tubes_impal.repos.SellerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class AuthService {
 
     @Autowired
     private SellerRepository sellerRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -82,7 +87,7 @@ public class AuthService {
      * Register new seller
      * 
      * @param username Username untuk login
-     * @param email    Email seller (akan disimpan di name field sementara)
+     * @param email    Email seller (akan disimpan di Contact)
      * @param password Plain text password
      * @return User object yang sudah disimpan
      * @throws Exception Jika username sudah terdaftar
@@ -101,6 +106,12 @@ public class AuthService {
         newSeller.setRole(com.tubes_impal.entity.UserRole.SELLER);
 
         User savedUser = register(newSeller);
+
+        // Create Contact dan simpan email
+        Contact contact = new Contact();
+        contact.setUser(savedUser);
+        contact.setEmail(email);
+        contactRepository.save(contact);
 
         Seller seller = new Seller();
         seller.setUser(savedUser);

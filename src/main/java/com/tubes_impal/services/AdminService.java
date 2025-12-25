@@ -1,11 +1,13 @@
 package com.tubes_impal.services;
 
 import com.tubes_impal.entity.Admin;
+import com.tubes_impal.entity.Contact;
 import com.tubes_impal.entity.Courier;
 import com.tubes_impal.entity.StatusCourier;
 import com.tubes_impal.entity.User;
 import com.tubes_impal.entity.UserRole;
 import com.tubes_impal.repos.AdminRepository;
+import com.tubes_impal.repos.ContactRepository;
 import com.tubes_impal.repos.CourierRepository;
 import com.tubes_impal.repos.SellerRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
@@ -38,6 +40,9 @@ public class AdminService {
 
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -231,9 +236,9 @@ public class AdminService {
      * Register new admin
      * 
      * @param username    Admin username
-     * @param email       Admin email (will be stored in username field)
+     * @param email       Admin email (will be stored in Contact)
      * @param password    Admin password
-     * @param phoneNumber Admin phone number (stored as name)
+     * @param phoneNumber Admin phone number (stored in Contact)
      * @return true if successful, false otherwise
      */
     public boolean registerAdmin(String username, String email, String password, String phoneNumber) {
@@ -246,7 +251,7 @@ public class AdminService {
             // Create new User
             User user = new User();
             user.setUsername(username);
-            user.setName(phoneNumber); // Store phone number in name field temporarily
+            user.setName(username); // Set name sama dengan username
             user.setRole(UserRole.ADMIN);
 
             // Hash password using BCrypt
@@ -254,6 +259,13 @@ public class AdminService {
 
             // Save user
             User savedUser = userRepository.save(user);
+
+            // Create Contact dan simpan email dan phone number
+            Contact contact = new Contact();
+            contact.setUser(savedUser);
+            contact.setEmail(email);
+            contact.setPhoneNumber(phoneNumber);
+            contactRepository.save(contact);
 
             // Create new Admin entity
             Admin admin = new Admin();
@@ -299,6 +311,13 @@ public class AdminService {
 
             // Save user
             User savedUser = userRepository.save(user);
+
+            // Create Contact dan simpan email dan phone number
+            Contact contact = new Contact();
+            contact.setUser(savedUser);
+            contact.setEmail(email);
+            contact.setPhoneNumber(phoneNumber);
+            contactRepository.save(contact);
 
             // Create new Courier entity with OFFLINE status (not yet hired)
             Courier courier = new Courier();
