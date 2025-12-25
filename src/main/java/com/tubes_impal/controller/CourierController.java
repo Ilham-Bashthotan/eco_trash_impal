@@ -240,6 +240,11 @@ public class CourierController {
                 return "redirect:/courier/orders/" + id;
             }
 
+            if (weight < 0.1 || weight > 100) {
+                redirectAttributes.addFlashAttribute("error", "Berat sampah harus antara 0.1 kg hingga 100 kg");
+                return "redirect:/courier/orders/" + id;
+            }
+
             Optional<TrashOrder> orderOpt = trashOrderRepository.findById(id.intValue());
             if (orderOpt.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Order tidak ditemukan");
@@ -320,6 +325,54 @@ public class CourierController {
 
             trashOrderRepository.save(order);
             redirectAttributes.addFlashAttribute("success", "Pesanan berhasil diselesaikan");
+            return "redirect:/courier/orders";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            return "redirect:/courier/orders/" + id;
+        }
+    }
+
+    @PostMapping("/orders/{id}/reject")
+    public String rejectOrder(
+            HttpServletRequest request,
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) String detail,
+            RedirectAttributes redirectAttributes) {
+        if (!isCourierAuthenticated(request)) {
+            return "redirect:/auth/courier/login";
+        }
+
+        Integer userId = SessionHelper.getUserId(request, "COURIER");
+
+        try {
+            Optional<TrashOrder> orderOpt = trashOrderRepository.findById(id.intValue());
+            if (orderOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak ditemukan");
+                return "redirect:/courier/orders";
+            }
+
+            TrashOrder order = orderOpt.get();
+            if (order.getCourier() == null || !order.getCourier().getUser().getId().equals(userId)) {
+                redirectAttributes.addFlashAttribute("error", "Order tidak dimiliki courier ini");
+                return "redirect:/courier/orders";
+            }
+
+            if (order.getStatus() != StatusOrder.PENDING) {
+                redirectAttributes.addFlashAttribute("error", "Hanya order dengan status PENDING yang bisa ditolak");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            if (reason == null || reason.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Alasan penolakan harus diisi");
+                return "redirect:/courier/orders/" + id;
+            }
+
+            order.setStatus(StatusOrder.CANCELED);
+            // Optionally, you can store the reason somewhere, e.g., in a new field or log it
+            trashOrderRepository.save(order);
+            redirectAttributes.addFlashAttribute("success", "Pesanan berhasil ditolak");
             return "redirect:/courier/orders";
 
         } catch (Exception e) {
