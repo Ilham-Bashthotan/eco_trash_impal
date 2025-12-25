@@ -359,8 +359,10 @@ public class CourierController {
                 return "redirect:/courier/orders";
             }
 
-            if (order.getStatus() != StatusOrder.PENDING) {
-                redirectAttributes.addFlashAttribute("error", "Hanya order dengan status PENDING yang bisa ditolak");
+            // Allow reject in any status except COMPLETED or CANCELED
+            if (order.getStatus() == StatusOrder.COMPLETED || order.getStatus() == StatusOrder.CANCELED) {
+                redirectAttributes.addFlashAttribute("error",
+                        "Pesanan yang sudah COMPLETED atau CANCELED tidak bisa ditolak");
                 return "redirect:/courier/orders/" + id;
             }
 
@@ -370,7 +372,9 @@ public class CourierController {
             }
 
             order.setStatus(StatusOrder.CANCELED);
-            // Optionally, you can store the reason somewhere, e.g., in a new field or log it
+            // Persist cancellation reason and detail
+            order.setReason(reason);
+            order.setReasonDetail(detail);
             trashOrderRepository.save(order);
             redirectAttributes.addFlashAttribute("success", "Pesanan berhasil ditolak");
             return "redirect:/courier/orders";

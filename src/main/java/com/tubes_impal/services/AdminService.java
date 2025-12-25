@@ -4,6 +4,7 @@ import com.tubes_impal.entity.Admin;
 import com.tubes_impal.entity.Contact;
 import com.tubes_impal.entity.Courier;
 import com.tubes_impal.entity.StatusCourier;
+import com.tubes_impal.entity.StatusOrder;
 import com.tubes_impal.entity.User;
 import com.tubes_impal.entity.UserRole;
 import com.tubes_impal.repos.AdminRepository;
@@ -200,13 +201,16 @@ public class AdminService {
                     .toList();
 
             int deliveries = orders.size();
-            // Simulate on-time and late deliveries (you can implement real logic based on
-            // your business rules)
-            // For now, assuming 80% are on time
-            int onTime = (int) (deliveries * 0.8);
-            int late = deliveries - onTime;
+            // Berhasil: count only COMPLETED orders
+            int onTime = (int) orders.stream()
+                    .filter(o -> o.getStatus() == StatusOrder.COMPLETED)
+                    .count();
+            // Gagal: count only CANCELED orders
+            int late = (int) orders.stream()
+                    .filter(o -> o.getStatus() == StatusOrder.CANCELED)
+                    .count();
 
-            double successRate = deliveries > 0 ? (double) onTime / deliveries * 100 : 0;
+            double successRate = deliveries > 0 ? (double) onTime / (onTime + late) * 100 : 0;
 
             courierStat.put("courierName", courier.getUser().getName());
             courierStat.put("totalDeliveries", deliveries);

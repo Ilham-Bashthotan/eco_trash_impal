@@ -13,6 +13,8 @@ public interface CourierDailyStatsRepository extends JpaRepository<CourierDailyS
 
     Optional<CourierDailyStats> findByCourierIdAndDate(Integer courierId, LocalDate date);
 
+    Optional<CourierDailyStats> findFirstByCourierIdAndDateOrderByIdDesc(Integer courierId, LocalDate date);
+
     List<CourierDailyStats> findByCourierId(Integer courierId);
 
     List<CourierDailyStats> findByDate(LocalDate date);
