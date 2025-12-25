@@ -2,7 +2,9 @@ package com.tubes_impal.controller;
 
 import com.tubes_impal.entity.User;
 import com.tubes_impal.services.AuthService;
-import jakarta.servlet.http.HttpSession;
+import com.tubes_impal.utils.MultiSessionManager;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +21,8 @@ public class AuthController {
     // ====================== ADMIN ======================
 
     @GetMapping("/admin/login")
-    public String showAdminLoginPage(HttpSession session, Model model) {
-        if (session.getAttribute("userId") != null &&
-                "ADMIN".equals(session.getAttribute("role"))) {
+    public String showAdminLoginPage(HttpServletRequest request, Model model) {
+        if (MultiSessionManager.isAuthenticated(request, "ADMIN")) {
             return "redirect:/admin/dashboard";
         }
         return "auth/admin-login";
@@ -31,7 +32,8 @@ public class AuthController {
     public String adminLogin(
             @RequestParam String username,
             @RequestParam String password,
-            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response,
             RedirectAttributes redirectAttributes) {
 
         if (username == null || username.trim().isEmpty() ||
@@ -52,24 +54,26 @@ public class AuthController {
             return "redirect:/auth/admin/login";
         }
 
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("username", user.getUsername());
-        session.setAttribute("role", user.getRole().toString());
+        MultiSessionManager.setSessionAttribute(request, response, "ADMIN", "userId", user.getId());
+        MultiSessionManager.setSessionAttribute(request, response, "ADMIN", "username", user.getUsername());
+        MultiSessionManager.setSessionAttribute(request, response, "ADMIN", "role", user.getRole().toString());
 
         redirectAttributes.addFlashAttribute("success", "Login berhasil!");
         return "redirect:/admin/dashboard";
     }
 
     @PostMapping("/admin/logout")
-    public String adminLogout(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String adminLogout(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "ADMIN");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/admin/login";
     }
 
     @GetMapping("/admin/logout")
-    public String adminLogoutGet(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String adminLogoutGet(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "ADMIN");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/admin/login";
     }
@@ -77,9 +81,8 @@ public class AuthController {
     // ====================== COURIER ======================
 
     @GetMapping("/courier/login")
-    public String showCourierLoginPage(HttpSession session, Model model) {
-        if (session.getAttribute("userId") != null &&
-                "COURIER".equals(session.getAttribute("role"))) {
+    public String showCourierLoginPage(HttpServletRequest request, Model model) {
+        if (MultiSessionManager.isAuthenticated(request, "COURIER")) {
             return "redirect:/courier/dashboard";
         }
         return "auth/courier-login";
@@ -89,7 +92,8 @@ public class AuthController {
     public String courierLogin(
             @RequestParam String username,
             @RequestParam String password,
-            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response,
             RedirectAttributes redirectAttributes) {
 
         if (username == null || username.trim().isEmpty() ||
@@ -110,24 +114,26 @@ public class AuthController {
             return "redirect:/auth/courier/login";
         }
 
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("username", user.getUsername());
-        session.setAttribute("role", user.getRole().toString());
+        MultiSessionManager.setSessionAttribute(request, response, "COURIER", "userId", user.getId());
+        MultiSessionManager.setSessionAttribute(request, response, "COURIER", "username", user.getUsername());
+        MultiSessionManager.setSessionAttribute(request, response, "COURIER", "role", user.getRole().toString());
 
         redirectAttributes.addFlashAttribute("success", "Login courier berhasil!");
         return "redirect:/courier/dashboard";
     }
 
     @PostMapping("/courier/logout")
-    public String courierLogout(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String courierLogout(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "COURIER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/courier/login";
     }
 
     @GetMapping("/courier/logout")
-    public String courierLogoutGet(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String courierLogoutGet(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "COURIER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/courier/login";
     }
@@ -135,8 +141,8 @@ public class AuthController {
     // =================== SELLER ===================
 
     @GetMapping("/seller/login")
-    public String showSellerLoginPage(HttpSession session) {
-        if (session.getAttribute("userId") != null) {
+    public String showSellerLoginPage(HttpServletRequest request) {
+        if (MultiSessionManager.isAuthenticated(request, "SELLER")) {
             return "redirect:/seller/dashboard";
         }
         return "auth/seller-login";
@@ -145,7 +151,8 @@ public class AuthController {
     @PostMapping("/seller/login")
     public String sellerLogin(@RequestParam String username,
             @RequestParam String password,
-            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response,
             RedirectAttributes redirectAttributes) {
 
         if (username == null || username.trim().isEmpty() ||
@@ -167,9 +174,9 @@ public class AuthController {
             return "redirect:/auth/seller/login";
         }
 
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("username", user.getUsername());
-        session.setAttribute("role", user.getRole().toString());
+        MultiSessionManager.setSessionAttribute(request, response, "SELLER", "userId", user.getId());
+        MultiSessionManager.setSessionAttribute(request, response, "SELLER", "username", user.getUsername());
+        MultiSessionManager.setSessionAttribute(request, response, "SELLER", "role", user.getRole().toString());
 
         redirectAttributes.addFlashAttribute("success", "Login berhasil!");
         return "redirect:/seller/dashboard";
@@ -178,8 +185,8 @@ public class AuthController {
     // ====================== SELLER SIGN IN======================
 
     @GetMapping("/seller/signin")
-    public String showSellerSignInPage(HttpSession session) {
-        if (session.getAttribute("userId") != null) {
+    public String showSellerSignInPage(HttpServletRequest request) {
+        if (MultiSessionManager.isAuthenticated(request, "SELLER")) {
             return "redirect:/seller/dashboard";
         }
         return "auth/seller-signin";
@@ -222,15 +229,17 @@ public class AuthController {
     }
 
     @PostMapping("/seller/logout")
-    public String sellerLogout(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String sellerLogout(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "SELLER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/seller/login";
     }
 
     @GetMapping("/seller/logout")
-    public String sellerLogoutGet(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
+    public String sellerLogoutGet(HttpServletRequest request, HttpServletResponse response,
+            RedirectAttributes redirectAttributes) {
+        MultiSessionManager.invalidateSession(request, response, "SELLER");
         redirectAttributes.addFlashAttribute("success", "Logout berhasil!");
         return "redirect:/auth/seller/login";
     }
