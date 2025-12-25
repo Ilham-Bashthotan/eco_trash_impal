@@ -2,9 +2,11 @@ package com.tubes_impal.services;
 
 import com.tubes_impal.entity.Courier;
 import com.tubes_impal.entity.TrashOrder;
+import com.tubes_impal.entity.Contact;
 import com.tubes_impal.repos.CourierRepository;
 import com.tubes_impal.repos.TrashOrderRepository;
 import com.tubes_impal.repos.UserRepository;
+import com.tubes_impal.repos.ContactRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -20,13 +22,16 @@ public class CourierService {
     private final CourierRepository courierRepository;
     private final TrashOrderRepository trashOrderRepository;
     private final UserRepository userRepository;
+    private final ContactRepository contactRepository;
 
     public CourierService(CourierRepository courierRepository,
             TrashOrderRepository trashOrderRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            ContactRepository contactRepository) {
         this.courierRepository = courierRepository;
         this.trashOrderRepository = trashOrderRepository;
         this.userRepository = userRepository;
+        this.contactRepository = contactRepository;
     }
 
     public Courier getCourierByUserId(Integer userId) {
@@ -113,9 +118,22 @@ public class CourierService {
         view.put("sellerName", order.getSeller() != null && order.getSeller().getUser() != null
                 ? order.getSeller().getUser().getName()
                 : "Unknown");
-        view.put("address", order.getSeller() != null && order.getSeller().getUser() != null
-                ? order.getSeller().getUser().getName()
-                : "Unknown");
+        // Address should be taken from Seller's Contact.address via User relationship
+        String address = "-";
+        if (order.getSeller() != null && order.getSeller().getUser() != null
+                && order.getSeller().getUser().getId() != null) {
+            Integer sellerUserId = order.getSeller().getUser().getId();
+            try {
+                Optional<Contact> contactOpt = contactRepository.findByUserId(sellerUserId);
+                if (contactOpt != null && contactOpt.isPresent() && contactOpt.get().getAddress() != null
+                        && !contactOpt.get().getAddress().isEmpty()) {
+                    address = contactOpt.get().getAddress();
+                }
+            } catch (Exception ignore) {
+                // keep default address "-" if lookup fails
+            }
+        }
+        view.put("address", address);
         view.put("weight", order.getTrash() != null && order.getTrash().getTrashWeight() != null
                 ? order.getTrash().getTrashWeight()
                 : 0);
